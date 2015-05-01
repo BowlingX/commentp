@@ -103,5 +103,4 @@ class ClusterSystem(clusterSystem: ActorSystem,
 trait AkkaCluster {
 
   def cluster: ActorSystem
-
 }

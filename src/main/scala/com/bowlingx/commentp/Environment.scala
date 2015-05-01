@@ -28,7 +28,9 @@ import com.bowlingx.commentp.akka.AkkaCluster
 
 trait Environment {
 
+  // scalastyle:off
   @Inject()
   var akkaCluster:AkkaCluster = null
+  // scalastyle:on
 
 }

@@ -75,6 +75,7 @@ trait AtmosphereServlet extends HttpServlet with Logging {
   override def doPost(req: HttpServletRequest, resp: HttpServletResponse) {
     handle(Post, req, resp)
   }
+  // scalastyle:off
 
   /**
    * Handles Route dispatching
@@ -121,6 +122,8 @@ trait AtmosphereServlet extends HttpServlet with Logging {
       case _ =>
     }
   }
+  // scalastyle:on
+
 
   private[this] def addHandler(method: HttpMethod, pattern: String, action: ActionBlock) {
     val el = Action(pattern, action)
