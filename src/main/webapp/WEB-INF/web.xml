@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+
+    <listener>
+        <listener-class>org.scalatra.servlet.ScalatraListener</listener-class>
+    </listener>
+
+    <filter>
+        <filter-name>WebsocketHandshakeFilter</filter-name>
+        <filter-class>org.atmosphere.websocket.WebSocketHandshakeFilter</filter-class>
+        <async-supported>true</async-supported>
+        <init-param>
+            <param-name>org.atmosphere.websocket.bannedVersion</param-name>
+            <param-value>-1</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>WebsocketHandshakeFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ApiServlet</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <description>Api</description>
+        <servlet-name>ApiServlet</servlet-name>
+        <servlet-class>org.atmosphere.cpr.MeteorServlet</servlet-class>
+        <async-supported>true</async-supported>
+        <init-param>
+            <param-name>org.atmosphere.cpr.broadcaster.maxProcessingThreads</param-name>
+            <param-value>40</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.atmosphere.cpr.removeSessionTimeout</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.atmosphere.cpr.broadcaster.maxAsyncWriteThreads</param-name>
+            <param-value>40</param-value>
+        </init-param>
+        <!-- see: https://github.com/Atmosphere/atmosphere/wiki/Configuring-Atmosphere-using-the-web.xml-or-atmosphere.xml -->
+        <init-param>
+            <param-name>org.atmosphere.servlet</param-name>
+            <param-value>com.bowlingx.commentp.WebSocketServlet</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.atmosphere.cpr.broadcasterClass</param-name>
+            <param-value>com.bowlingx.commentp.akka.AkkaBroadcaster</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.atmosphere.cpr.sessionSupport</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.atmosphere.cpr.broadcasterLifeCyclePolicy</param-name>
+            <param-value>EMPTY_DESTROY</param-value>
+        </init-param>
+        <!-- Add Heartbeat to prevent connection loss:
+            see https://github.com/Atmosphere/atmosphere/wiki/Keeping-a-connection-active-using-an-Heartbeat-AtmosphereInterceptor-->
+        <init-param>
+            <param-name>org.atmosphere.cpr.AtmosphereInterceptor</param-name>
+            <param-value>org.atmosphere.interceptor.NginxInterceptor</param-value>
+        </init-param>
+        <!-->
+        Caching of messages
+        <init-param>
+             <param-name>org.atmosphere.cpr.broadcasterCacheClass</param-name>
+             <param-value>org.atmosphere.cache.UUIDBroadcasterCache</param-value>
+         </init-param>
+        <init-param>
+            <param-name>org.atmosphere.cpr.BroadcasterCache.strategy</param-name>
+            <param-value>afterFilter</param-value>
+        </init-param>
+        -->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+</web-app>
