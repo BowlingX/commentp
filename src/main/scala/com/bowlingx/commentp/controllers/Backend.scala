@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 import com.bowlingx.commentp.{BaseController, Environment}
 
-class Website @Inject()(env: Environment) extends BaseController {
+class Backend @Inject()(env: Environment) extends BaseController {
 
 
   get("/") {

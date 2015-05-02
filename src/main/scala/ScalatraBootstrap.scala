@@ -23,7 +23,7 @@
 import javax.servlet.ServletContext
 
 import com.bowlingx.commentp.akka.{AkkaBroadcaster, AkkaCluster, ClusterSystem}
-import com.bowlingx.commentp.controllers.Website
+import com.bowlingx.commentp.controllers.Backend
 import com.bowlingx.commentp.util.Logging
 import com.bowlingx.commentp.{Environment, ServletEnvironment, WebSocketServlet}
 import com.google.inject.{Guice, Provides}
@@ -66,7 +66,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       }
     })
 
-    context.mount(injector.getInstance(classOf[Website]), "/*")
+    context.mount(injector.getInstance(classOf[Backend]), "/*")
   }
 
   override def destroy(context: ServletContext): Unit = {
