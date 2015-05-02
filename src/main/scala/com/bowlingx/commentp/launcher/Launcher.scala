@@ -43,6 +43,11 @@ class Launcher extends App {
 
   val server = new Server(port)
   val context = new WebAppContext()
+  // Disable Directory listing
+  context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false")
+  // Disable showing stack trace
+  context.getErrorHandler.setShowStacks(false)
+
   context.setContextPath("/")
   context.setResourceBase("src/main/webapp")
 
