@@ -30,7 +30,7 @@ import org.scalatra.scalate.ScalateSupport
 
 import scala.collection.mutable
 
-trait BaseController extends ScalatraServlet with ScalateSupport with Environment {
+trait BaseController extends ScalatraServlet with ScalateSupport {
 
   /* wire up the precompiled templates */
   override protected def defaultTemplatePath: List[String] = List("/WEB-INF/templates/views")

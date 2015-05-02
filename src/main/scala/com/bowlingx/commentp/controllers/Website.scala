@@ -23,13 +23,12 @@ package com.bowlingx.commentp.controllers
 
 import javax.inject.Inject
 
-import akka.actor.ActorSystem
-import com.bowlingx.commentp.BaseController
+import com.bowlingx.commentp.{BaseController, Environment}
 
-class Website extends BaseController {
+class Website @Inject()(env: Environment) extends BaseController {
 
 
   get("/") {
-
+    env.getBroadcaster.toString
   }
 }

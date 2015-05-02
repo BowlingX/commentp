@@ -19,6 +19,7 @@ object CommentpBuild extends Build {
   lazy val logbackVersion        = "1.1.2"
   lazy val akkaVersion           = "2.3.9"
   lazy val guiceVersion          = "4.0"
+  lazy val json4sVersion         = "3.2.11"
 
   lazy val project = Project(
     "commentp",
@@ -60,7 +61,10 @@ object CommentpBuild extends Build {
         "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
         "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
         "com.typesafe.akka" %% "akka-contrib" % akkaVersion,
-        "com.typesafe.akka" %% "akka-slf4j" % akkaVersion
+        "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
+        "org.json4s" %% "json4s-native" % json4sVersion,
+        "org.json4s" %% "json4s-jackson" % json4sVersion
+
       ),
       scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile) { base =>

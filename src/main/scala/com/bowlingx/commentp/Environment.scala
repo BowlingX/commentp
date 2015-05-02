@@ -24,13 +24,19 @@ package com.bowlingx.commentp
 
 import javax.inject.Inject
 
-import com.bowlingx.commentp.akka.AkkaCluster
+import com.bowlingx.commentp.akka.{AkkaBroadcaster, AkkaCluster}
+import org.atmosphere.cpr.BroadcasterFactory
 
 trait Environment {
 
-  // scalastyle:off
-  @Inject()
-  var akkaCluster:AkkaCluster = null
-  // scalastyle:on
+  def getBroadcaster: AkkaBroadcaster
 
+  def getAkkaCluster: AkkaCluster
+}
+
+class ServletEnvironment @Inject()(akkaCluster: AkkaCluster, broadcasterFactory: BroadcasterFactory) extends Environment {
+
+  def getBroadcaster: AkkaBroadcaster = broadcasterFactory.get().asInstanceOf[AkkaBroadcaster]
+
+  def getAkkaCluster: AkkaCluster = akkaCluster
 }

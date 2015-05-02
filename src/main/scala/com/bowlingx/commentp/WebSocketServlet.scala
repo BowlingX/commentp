@@ -25,10 +25,21 @@ import javax.inject.Inject
 
 import com.bowlingx.commentp.atmosphere.AtmosphereServlet
 import org.atmosphere.cpr.BroadcasterFactory
+import org.json4s._
+import org.json4s.jackson.JsonMethods._
 
+case class StringMessage(msg:String)
 
 class WebSocketServlet @Inject() (b: BroadcasterFactory) extends AtmosphereServlet {
 
+  implicit val jsonFormats = org.json4s.DefaultFormats
+
   val broadcasterFactory: BroadcasterFactory = b
 
+  atmosphere("/sub/:channel") {
+
+    case (action, message: StringMessage) => Some(compact(render(Extraction.decompose(message))))
+
+
+  }
 }

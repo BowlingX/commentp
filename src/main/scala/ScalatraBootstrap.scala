@@ -24,32 +24,49 @@ import javax.servlet.ServletContext
 
 import com.bowlingx.commentp.akka.{AkkaBroadcaster, AkkaCluster, ClusterSystem}
 import com.bowlingx.commentp.controllers.Website
+import com.bowlingx.commentp.util.Logging
+import com.bowlingx.commentp.{Environment, ServletEnvironment, WebSocketServlet}
 import com.google.inject.{Guice, Provides}
 import com.tzavellas.sse.guice.ScalaModule
+import org.atmosphere.cpr._
 import org.scalatra._
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-class ScalatraBootstrap extends LifeCycle {
+class ScalatraBootstrap extends LifeCycle with Logging {
 
   lazy val system = ClusterSystem("commentp", 1 minute, Some("akka-cluster.conf"), None)
 
   override def init(context: ServletContext) {
 
     context.setAttribute(AkkaBroadcaster.CLUSTER_SYSTEM, system.cluster)
+
+    val atmosphereServlet = context.createServlet(classOf[MeteorServlet])
+    val framework = atmosphereServlet.framework()
+    framework.setDefaultBroadcasterClassName(classOf[AkkaBroadcaster].getName)
+    val reg = context.addServlet("WebsocketServlet", atmosphereServlet)
+    reg.setAsyncSupported(true)
+    reg.setInitParameter("org.atmosphere.servlet", classOf[WebSocketServlet].getName)
+    reg.addMapping("/api/*")
+
     val injector = Guice.createInjector(new ScalaModule() {
       def configure(): Unit = {
+        bind[Environment].to[ServletEnvironment]
       }
 
       @Provides
       def provideActorSystem(): AkkaCluster = {
         system
       }
+
+      @Provides
+      def provideBroadcasterFactory(): BroadcasterFactory = {
+        framework.getBroadcasterFactory
+      }
     })
 
     context.mount(injector.getInstance(classOf[Website]), "/*")
-
   }
 
   override def destroy(context: ServletContext): Unit = {
