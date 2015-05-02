@@ -26,7 +26,7 @@ object CommentpBuild extends Build {
     settings = ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       organization := Organization,
       name := Name,
-      mainClass := Some("com.bowlingx.commentp.launcher.Launcher"),
+      mainClass in Compile := Some("com.bowlingx.commentp.launcher.Launcher"),
       ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
       scalaVersion := ScalaVersion,
       resolvers += Classpaths.typesafeReleases,

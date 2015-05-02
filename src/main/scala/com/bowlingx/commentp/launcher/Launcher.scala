@@ -22,20 +22,19 @@
 
 package com.bowlingx.commentp.launcher
 
+import com.bowlingx.commentp.util.Logging
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.webapp.WebAppContext
-import org.scalatra.servlet.ScalatraListener
 
 import scala.util.Try
-
-object Launcher {
-  val DEFAULT_PORT = 8080
-}
 
 /**
  * Main Entry point, launches embedded jetty
  */
-class Launcher extends App {
+object Launcher extends App with Logging {
+  val DEFAULT_PORT = 8080
+
+  import logger._
 
   // read the port from environment
   val port = Option(System.getenv("PORT")) flatMap(
@@ -43,17 +42,22 @@ class Launcher extends App {
 
   val server = new Server(port)
   val context = new WebAppContext()
+  context.setContextPath("/")
+  context.setResourceBase("../webapp")
+
   // Disable Directory listing
   context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false")
   // Disable showing stack trace
   context.getErrorHandler.setShowStacks(false)
 
-  context.setContextPath("/")
-  context.setResourceBase("src/main/webapp")
-
-  context.setEventListeners(Array(new ScalatraListener))
-
   server.setHandler(context)
+
+  Runtime.getRuntime.addShutdownHook(new Thread() {
+    override def run() {
+      info("Stopping server")
+      server.stop()
+    }
+  })
 
   server.start
   server.join
