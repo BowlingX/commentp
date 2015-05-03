@@ -26,8 +26,8 @@ import java.net.URI
 import java.util.UUID
 
 import akka.actor._
+import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Unsubscribe}
-import akka.contrib.pattern.{DistributedPubSubExtension, DistributedPubSubMediator}
 import akka.routing.{Deafen, Listen, Listeners}
 import com.bowlingx.commentp.util.Logging
 import org.atmosphere.cpr._
@@ -54,7 +54,7 @@ class Publisher(topic: String) extends Actor with ActorLogging {
   // activate the extension
   val mediator = DistributedPubSubExtension(context.system).mediator
 
-  def receive : Receive = {
+  def receive: Receive = {
     case o: Broadcast => mediator ! Publish(topic, o)
   }
 }
@@ -81,10 +81,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
   // scalastyle:off
   implicit var system: ActorSystem = null.asInstanceOf[ActorSystem]
 
-  @volatile
   var publisher: ActorRef = null.asInstanceOf[ActorRef]
-
-  @volatile
   var subscriber: ActorRef = null.asInstanceOf[ActorRef]
   // scalastyle:on
 
@@ -167,6 +164,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
                 }
                 event.getResource.removeEventListener(this)
               }
+
               override def onHeartbeat(event: AtmosphereResourceEvent): Unit = {}
             }
             getAtmosphereResources foreach {
