@@ -45,7 +45,7 @@ object AkkaBroadcaster {
 }
 
 /**
- * Akka Publisher, handles broadcasted message and a notification if a message has been delivered to client
+ * Akka Publisher, handles message and a notification if a message has been delivered to client
  * @param topic
  */
 class Publisher(topic: String) extends Actor with ActorLogging {
@@ -103,7 +103,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
 
     /**
      * Actor System, will be resolved through an servlet attribute defined in
-     * [[com.hellofellow.distribute.akka.AkkaBroadcaster.CLUSTER]]
+     * [[AkkaBroadcaster.CLUSTER_SYSTEM]]
      */
     system = config.getServletContext.getAttribute(AkkaBroadcaster.CLUSTER_SYSTEM).asInstanceOf[ActorSystem]
     publisher = system.actorOf(Props(new Publisher(id)))
@@ -140,7 +140,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
           case broadcastedMsg@Broadcast(m, uniqueID) =>
             import scala.collection.JavaConversions._
 
-            // Register listener and notify publisher if message has been broadcasted successfully
+            // Register listener and notify publisher if message has been broadcast successfully
             val listener = new AtmosphereResourceEventListener {
               def onThrowable(event: AtmosphereResourceEvent) {
                 event.getResource.removeEventListener(this)

@@ -181,7 +181,7 @@ trait AtmosphereServlet extends HttpServlet with Logging {
    * @param block atmosphere partial matching
    * @return
    */
-  def atmosphere(pattern: String)(block: AtmosphereMatch): Unit = {
+  def atmosphereGet(pattern: String)(block: AtmosphereMatch): Unit = {
     get(pattern) {
       a =>
         val m = createMeteor(a.req.getRequestURI, a, block)

@@ -36,10 +36,16 @@ class WebSocketServlet @Inject() (b: BroadcasterFactory) extends AtmosphereServl
 
   val broadcasterFactory: BroadcasterFactory = b
 
-  atmosphere("/sub/:channel") {
-
+  atmosphereGet("/api/sub/:channel") {
     case (action, message: StringMessage) => Some(compact(render(Extraction.decompose(message))))
 
+  }
 
+  post("/api/sub/:channel") { a =>
+    val postBody = a.req.getReader.readLine()
+    val Seq(channel) = a.routeParams.get("channel").getOrElse(Seq("default"))
+
+    logger.info(s"body: $postBody, channel: $channel")
+    "OK"
   }
 }

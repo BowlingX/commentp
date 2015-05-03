@@ -29,6 +29,8 @@ class Backend @Inject()(env: Environment) extends BaseController {
 
 
   get("/") {
-    env.getBroadcaster.toString
+    contentType_=("text/html")
+
+    jade("index.jade")
   }
 }

@@ -1,12 +1,8 @@
--@ val title: String
--@ val headline: String = title
 -@ val body: String
-
 !!!
 html
   head
-    title= title
   body
     #content
-      h1= headline
       != body
+    script(src="/static/build/js/client.min.js" type="text/javascript")
