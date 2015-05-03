@@ -68,4 +68,4 @@ jrebel.lic
 # paulp script
 /.lib/
 
-src/webapp/static/build
+src/main/webapp/static/build

@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 import ReconnectingWebSocket from 'ReconnectingWebSocket';
 
 var connection = new ReconnectingWebSocket('ws://localhost:8080/api/sub/test', []);
