@@ -26,10 +26,11 @@ import java.util.UUID
 import javax.inject.Inject
 
 import com.bowlingx.commentp.atmosphere.AtmosphereServlet
-import org.atmosphere.cpr.{ApplicationConfig, BroadcasterFactory}
+import org.atmosphere.cpr.{ApplicationConfig, AtmosphereResourceFactory, BroadcasterFactory}
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 
+import scala.concurrent.duration._
 import scala.language.postfixOps
 
 case class StringMessage(msg: String)
@@ -39,19 +40,21 @@ case class StringMessage(msg: String)
  * @param action name of action
  * @param params action parameters
  */
-case class Protocol(action:String, params:Map[String, JValue]) {
+case class Protocol(action: String, params: Map[String, JValue]) {
   val id = UUID.randomUUID().toString
 }
 
 /**
  * Servlet that handles a socket connection and protocol for all clients
- * @param b factory to create broadcasters
+ * @param broadcastFactory factory to create broadcasters
  */
-final class WebSocketServlet @Inject()(b: BroadcasterFactory) extends AtmosphereServlet {
+final class WebSocketServlet @Inject()(broadcastFactory: BroadcasterFactory, env: Environment,
+                                       resourceFactory: AtmosphereResourceFactory)
+  extends AtmosphereServlet {
 
   implicit val jsonFormats = org.json4s.DefaultFormats
 
-  val broadcasterFactory: BroadcasterFactory = b
+  val broadcasterFactory: BroadcasterFactory = broadcastFactory
 
   val channel = "/sock/sub/:channel".intern
 
@@ -65,6 +68,15 @@ final class WebSocketServlet @Inject()(b: BroadcasterFactory) extends Atmosphere
     val postBody = a.req.getReader.readLine()
     // try to extract protocol
     parse(postBody).extractOpt[Protocol] map { action =>
+      implicit val context = env.getAkkaCluster.cluster.dispatcher
+      implicit val timeout = 1 minute
+      val uuid = a.req.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID).asInstanceOf[String]
+      env.run(action)(timeout) foreach { message =>
+        Option(resourceFactory.find(uuid)).foreach(resource => {
+          env.broadcastOnce(action.id, message, List(resource))(timeout, context)
+        })
+      }
+      // The ID that action has
       action.id
     } getOrElse ""
   }

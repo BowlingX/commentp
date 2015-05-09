@@ -24,19 +24,65 @@ package com.bowlingx.commentp
 
 import javax.inject.Inject
 
-import com.bowlingx.commentp.akka.{AkkaBroadcaster, AkkaCluster}
-import org.atmosphere.cpr.BroadcasterFactory
+import _root_.akka.actor.ActorRef
+import _root_.akka.pattern.ask
+import _root_.akka.util.Timeout
+import com.bowlingx.commentp.akka.{AkkaBroadcaster, AkkaCluster, DidBroadcast}
+import org.atmosphere.cpr.{AtmosphereResource, BroadcasterFactory}
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.FiniteDuration
 
 trait Environment {
+
+  val actionActor: ActorRef
+
+  val broadcasterFactory: BroadcasterFactory
 
   def getBroadcaster: AkkaBroadcaster
 
   def getAkkaCluster: AkkaCluster
+
+  /**
+   * Will run a given protocol and execute action
+   * @param p protocol
+   * @param timeout a timeout until the future should be completed
+   * @return
+   */
+  def run(p: Protocol)(implicit timeout: Timeout): Future[Any] = {
+    actionActor ? p
+  }
+
+  /**
+   * Broadcast a message once and will destroy the broadcaster after
+   * @param id the broadcast id
+   * @param msg the message
+   * @param resources resources to bind to this broadcaster
+   * @param duration timeout for receiving a message
+   * @return
+   */
+  def broadcastOnce(id: String, msg: Any, resources:List[AtmosphereResource] = List.empty[AtmosphereResource])
+                   (implicit duration: FiniteDuration, executionContext:ExecutionContext): Future[DidBroadcast] = {
+    val broadcaster = broadcasterFactory.lookup(id, true).asInstanceOf[AkkaBroadcaster]
+    resources foreach(resource => broadcaster.addAtmosphereResource(resource))
+
+    val future = broadcaster.future(msg)
+    broadcaster.broadcast(msg)
+
+    future foreach  { didBroadcast =>
+      broadcaster.destroy()
+    }
+
+    future
+  }
 }
 
-class ServletEnvironment @Inject()(akkaCluster: AkkaCluster, broadcasterFactory: BroadcasterFactory) extends Environment {
+class ServletEnvironment @Inject()(akkaCluster: AkkaCluster,
+                                   val broadcasterFactory: BroadcasterFactory,
+                                   val actionActor: ActorRef) extends Environment {
 
   def getBroadcaster: AkkaBroadcaster = broadcasterFactory.get().asInstanceOf[AkkaBroadcaster]
 
   def getAkkaCluster: AkkaCluster = akkaCluster
+
 }

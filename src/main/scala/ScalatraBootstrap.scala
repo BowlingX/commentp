@@ -22,11 +22,12 @@
 
 import javax.servlet.ServletContext
 
-import com.bowlingx.commentp.akka.{AkkaBroadcaster, AkkaCluster, ClusterSystem}
+import _root_.akka.actor.{ActorRef, Props}
+import com.bowlingx.commentp.akka.{ProtocolActor, AkkaBroadcaster, AkkaCluster, ClusterSystem}
 import com.bowlingx.commentp.controllers.Backend
 import com.bowlingx.commentp.util.Logging
 import com.bowlingx.commentp.{Environment, ServletEnvironment, WebSocketServlet}
-import com.google.inject.{Guice, Provides}
+import com.google.inject.{Guice, Injector, Provides}
 import com.tzavellas.sse.guice.ScalaModule
 import org.atmosphere.cpr._
 import org.scalatra._
@@ -44,11 +45,8 @@ class ScalatraBootstrap extends LifeCycle with Logging {
 
     val atmosphereServlet = context.createServlet(classOf[MeteorServlet])
     val framework = atmosphereServlet.framework()
-    framework.setDefaultBroadcasterClassName(classOf[AkkaBroadcaster].getName)
-    val reg = context.addServlet("WebsocketServlet", atmosphereServlet)
-    reg.setAsyncSupported(true)
-    reg.setInitParameter("org.atmosphere.servlet", classOf[WebSocketServlet].getName)
-    reg.addMapping("/sock/*")
+
+    val actionActor = system.cluster.actorOf(Props[ProtocolActor])
 
     val injector = Guice.createInjector(new ScalaModule() {
       def configure(): Unit = {
@@ -61,10 +59,32 @@ class ScalatraBootstrap extends LifeCycle with Logging {
       }
 
       @Provides
+      def provideActionActor():ActorRef = {
+        actionActor
+      }
+
+      @Provides
       def provideBroadcasterFactory(): BroadcasterFactory = {
         framework.getBroadcasterFactory
       }
     })
+
+    context.setAttribute(classOf[Injector].getName, Guice.createInjector(new ScalaModule() {
+      def configure(): Unit = {
+      }
+      @Provides
+      def provideEnvironment(): Environment = {
+        new ServletEnvironment(system, framework.getBroadcasterFactory, actionActor)
+      }
+    }))
+
+    framework.setDefaultBroadcasterClassName(classOf[AkkaBroadcaster].getName)
+    val reg = context.addServlet("WebsocketServlet", atmosphereServlet)
+    reg.setAsyncSupported(true)
+    reg.setInitParameter("org.atmosphere.servlet", classOf[WebSocketServlet].getName)
+    reg.addMapping("/sock/*")
+
+
 
     context.mount(injector.getInstance(classOf[Backend]), "/*")
   }
