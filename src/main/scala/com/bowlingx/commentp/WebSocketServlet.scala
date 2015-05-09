@@ -19,33 +19,53 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 package com.bowlingx.commentp
 
+import java.util.UUID
 import javax.inject.Inject
 
 import com.bowlingx.commentp.atmosphere.AtmosphereServlet
-import org.atmosphere.cpr.BroadcasterFactory
+import org.atmosphere.cpr.{ApplicationConfig, BroadcasterFactory}
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 
-case class StringMessage(msg:String)
+import scala.language.postfixOps
 
-class WebSocketServlet @Inject() (b: BroadcasterFactory) extends AtmosphereServlet {
+case class StringMessage(msg: String)
+
+/**
+ * Simple protocol defining an action to run with given params
+ * @param action name of action
+ * @param params action parameters
+ */
+case class Protocol(action:String, params:Map[String, JValue]) {
+  val id = UUID.randomUUID().toString
+}
+
+/**
+ * Servlet that handles a socket connection and protocol for all clients
+ * @param b factory to create broadcasters
+ */
+final class WebSocketServlet @Inject()(b: BroadcasterFactory) extends AtmosphereServlet {
 
   implicit val jsonFormats = org.json4s.DefaultFormats
 
   val broadcasterFactory: BroadcasterFactory = b
 
-  atmosphereGet("/api/sub/:channel") {
-    case (action, message: StringMessage) => Some(compact(render(Extraction.decompose(message))))
+  val channel = "/sock/sub/:channel".intern
 
+  // subscribe endpoint
+  atmosphereGet(channel) {
+    case (action, message: StringMessage) => Some(compact(render(Extraction.decompose(message))))
   }
 
-  post("/api/sub/:channel") { a =>
+  // publish endpoint
+  post(channel) { a =>
     val postBody = a.req.getReader.readLine()
-    val Seq(channel) = a.routeParams.get("channel").getOrElse(Seq("default"))
-
-    logger.info(s"body: $postBody, channel: $channel")
-    "OK"
+    // try to extract protocol
+    parse(postBody).extractOpt[Protocol] map { action =>
+      action.id
+    } getOrElse ""
   }
 }

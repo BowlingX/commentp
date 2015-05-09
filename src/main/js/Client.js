@@ -24,12 +24,12 @@
 
 import ReconnectingWebSocket from 'ReconnectingWebSocket';
 
-var connection = new ReconnectingWebSocket('ws://localhost:8080/api/sub/test', []);
+var connection = new ReconnectingWebSocket('ws://localhost:8080/sock/sub/test', []);
 
 // When the connection is open, send some data to the server
 connection.onopen = function () {
     "use strict";
-    var test = JSON.stringify({"an object": [1, 2, 3, 4, 5, 6]});
+    var test = JSON.stringify({action:"init", params: {"user": "BowlingX"}});
     connection.send(test); // Send the message 'Ping' to the server
 };
 

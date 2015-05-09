@@ -48,7 +48,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     val reg = context.addServlet("WebsocketServlet", atmosphereServlet)
     reg.setAsyncSupported(true)
     reg.setInitParameter("org.atmosphere.servlet", classOf[WebSocketServlet].getName)
-    reg.addMapping("/api/*")
+    reg.addMapping("/sock/*")
 
     val injector = Guice.createInjector(new ScalaModule() {
       def configure(): Unit = {
