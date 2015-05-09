@@ -24,16 +24,125 @@
 
 import ReconnectingWebSocket from 'ReconnectingWebSocket';
 
-var connection = new ReconnectingWebSocket('ws://localhost:8080/sock/sub/test', []);
+/**
+ * @type {string}
+ */
+const PING_FRAME = 'X';
 
-// When the connection is open, send some data to the server
-connection.onopen = function () {
-    "use strict";
-    var test = JSON.stringify({action:"init", params: {"user": "BowlingX"}});
-    connection.send(test); // Send the message 'Ping' to the server
-};
+/**
+ * @type {string}
+ */
+const ERROR_FRAME = '!';
 
-connection.onmessage = (msg) => {
-    "use strict";
-    console.log(msg.data);
-};
+
+/**
+ * Basic WebSocket Client that confirms to the `commentp` Protocol
+ */
+class Client {
+    constructor(channelId, options) {
+        this.channelId = channelId;
+        this.currentRequestId = 0;
+        this.actionResponses = [];
+
+        this.options = {
+            // timeout for actions
+            requestTimeout: 10000,
+            // base webSocket URI
+            baseUrl: 'ws://localhost:8080/sock/sub/'
+        };
+
+        Object.assign(this.options, options);
+    }
+
+    /**
+     * Factory to create a new Client connection
+     * @param channelId
+     * @returns {Promise}
+     */
+    static connect(channelId) {
+        const client = new Client(channelId);
+        client.promise = new Promise(resolve => {
+            const connection = new ReconnectingWebSocket(client.options.baseUrl + channelId, []);
+            client._connection = connection;
+            connection.onmessage = (event) => {
+                const msg = event.data;
+                if (msg && msg !== PING_FRAME && msg !== ERROR_FRAME) {
+                    try {
+                        const result = JSON.parse(msg);
+                        if (result && result.id) {
+                            client.actionResponses.push(result);
+                        }
+                    } catch (e) {
+                        console.error("Could not parse JSON response", e);
+                    }
+                }
+            };
+            // connect and resolve when finished
+            connection.onopen = (e) => {
+                if (!e.isReconnect) {
+                    resolve(client);
+                    console.info(`did connect to server with ID: ${channelId}`);
+                }
+            };
+
+        });
+
+        return client.promise;
+    }
+
+    /**
+     * Runs an action with given parameters
+     * @param name
+     * @param params
+     * @returns {Promise}
+     */
+    action(name, params) {
+        const self = this, currentId = ++this.currentRequestId,
+            action = JSON.stringify({
+                action: name,
+                id: currentId,
+                params: params
+            });
+        const promise = new Promise((resolve, reject) => {
+            var resultFound = false;
+            if (1 !== this._connection.readyState) {
+                reject('WebSocket not connected');
+            }
+            Array.observe(self.actionResponses, function thisObserver(changes) {
+                changes.forEach(change => {
+                    if ('splice' === change.type) {
+                        const result = Array.find(change.object, (addedObject) => {
+                            return addedObject.id && addedObject.id == currentId;
+                        });
+                        self.actionResponses.splice(change.index, 1);
+                        if (result) {
+                            resultFound = true;
+                            // stop observing till the result has been found
+                            Array.unobserve(self.actionResponses, thisObserver);
+                            resolve(result);
+                        }
+                    }
+                });
+
+                setTimeout(function () {
+                    if (!resultFound) {
+                        reject('Timeout');
+                        Array.unobserve(self.actionResponses, thisObserver);
+                    }
+                }, this.options.requestTimeout);
+            });
+        });
+
+        this._connection.send(action);
+        return promise;
+    }
+
+    /**
+     * Close connection with client
+     */
+    close() {
+        this._connection.close();
+    }
+}
+
+export default Client;

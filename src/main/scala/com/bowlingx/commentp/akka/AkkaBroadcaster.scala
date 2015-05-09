@@ -88,10 +88,11 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
   val DID_PUBLISH_TIMEOUT_SECONDS = 6
 
   /**
-   * Initilizes this Broadcaster
-   * @param id
-   * @param uri
-   * @param config
+   * Initializes this Broadcaster
+   *
+   * @param id channel/topic
+   * @param uri uri (unused)
+   * @param config atmosphere config
    * @return
    */
   override def initialize(id: String, uri: URI, config: AtmosphereConfig): Broadcaster = {

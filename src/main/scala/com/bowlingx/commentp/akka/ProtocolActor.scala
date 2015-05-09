@@ -25,13 +25,14 @@ package com.bowlingx.commentp.akka
 import akka.actor.Actor
 import com.bowlingx.commentp.Protocol
 
+case class ActionResponse(id:String, result:Any)
 /**
  * Handles protocols
  */
 class ProtocolActor extends Actor {
 
   def receive : Receive = {
-    case Protocol("init", params) =>
-      sender ! "answer"
+    case Protocol("init", id,  params) =>
+      sender ! ActionResponse(id, "A test")
   }
 }

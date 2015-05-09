@@ -22,9 +22,9 @@
 
 package com.bowlingx.commentp
 
-import java.util.UUID
 import javax.inject.Inject
 
+import com.bowlingx.commentp.akka.ActionResponse
 import com.bowlingx.commentp.atmosphere.AtmosphereServlet
 import org.atmosphere.cpr.{ApplicationConfig, AtmosphereResourceFactory, BroadcasterFactory}
 import org.json4s._
@@ -40,9 +40,7 @@ case class StringMessage(msg: String)
  * @param action name of action
  * @param params action parameters
  */
-case class Protocol(action: String, params: Map[String, JValue]) {
-  val id = UUID.randomUUID().toString
-}
+case class Protocol(action: String, id: String, params: Map[String, JValue])
 
 /**
  * Servlet that handles a socket connection and protocol for all clients
@@ -71,13 +69,14 @@ final class WebSocketServlet @Inject()(broadcastFactory: BroadcasterFactory, env
       implicit val context = env.getAkkaCluster.cluster.dispatcher
       implicit val timeout = 1 minute
       val uuid = a.req.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID).asInstanceOf[String]
-      env.run(action)(timeout) foreach { message =>
-        Option(resourceFactory.find(uuid)).foreach(resource => {
-          env.broadcastOnce(action.id, message, List(resource))(timeout, context)
-        })
+      env.run(action)(timeout) foreach {
+        case r@ActionResponse(id, message) =>
+          Option(resourceFactory.find(uuid)).foreach(resource => {
+            // Write answer directly to requested resource
+            resource.write(compact(render(Extraction.decompose(r))))
+          })
       }
-      // The ID that action has
-      action.id
-    } getOrElse ""
+      ""
+    } getOrElse "!"
   }
 }
