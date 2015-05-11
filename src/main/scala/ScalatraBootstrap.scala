@@ -49,41 +49,20 @@ class ScalatraBootstrap extends LifeCycle with Logging {
     val actionActor = system.cluster.actorOf(Props[ProtocolActor])
 
     val injector = Guice.createInjector(new ScalaModule() {
-      def configure(): Unit = {
-        bind[Environment].to[ServletEnvironment]
-      }
-
-      @Provides
-      def provideActorSystem(): AkkaCluster = {
-        system
-      }
-
-      @Provides
-      def provideActionActor():ActorRef = {
-        actionActor
-      }
-
-      @Provides
-      def provideBroadcasterFactory(): BroadcasterFactory = {
-        framework.getBroadcasterFactory
-      }
-    })
-
-    context.setAttribute(classOf[Injector].getName, Guice.createInjector(new ScalaModule() {
-      def configure(): Unit = {
-      }
+      def configure(): Unit = {}
       @Provides
       def provideEnvironment(): Environment = {
         new ServletEnvironment(system, framework.getBroadcasterFactory, actionActor)
       }
-    }))
+    })
+
+    context.setAttribute(classOf[Injector].getName, injector)
 
     framework.setDefaultBroadcasterClassName(classOf[AkkaBroadcaster].getName)
     val reg = context.addServlet("WebsocketServlet", atmosphereServlet)
     reg.setAsyncSupported(true)
     reg.setInitParameter("org.atmosphere.servlet", classOf[WebSocketServlet].getName)
     reg.addMapping("/sock/*")
-
 
 
     context.mount(injector.getInstance(classOf[Backend]), "/*")

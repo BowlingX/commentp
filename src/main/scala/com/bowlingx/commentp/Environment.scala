@@ -33,15 +33,21 @@ import org.atmosphere.cpr.{AtmosphereResource, BroadcasterFactory}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
 
+/**
+ * Reflects the environment this Application runs in
+ * Shares Access to common services
+ */
 trait Environment {
+
+  val akkaCluster:AkkaCluster
 
   val actionActor: ActorRef
 
   val broadcasterFactory: BroadcasterFactory
 
-  def getBroadcaster: AkkaBroadcaster
+  def getBroadcaster: AkkaBroadcaster = broadcasterFactory.get().asInstanceOf[AkkaBroadcaster]
 
-  def getAkkaCluster: AkkaCluster
+  def getAkkaCluster: AkkaCluster = akkaCluster
 
   /**
    * Will run a given protocol and execute action
@@ -77,12 +83,8 @@ trait Environment {
   }
 }
 
-class ServletEnvironment @Inject()(akkaCluster: AkkaCluster,
+class ServletEnvironment @Inject()(val akkaCluster: AkkaCluster,
                                    val broadcasterFactory: BroadcasterFactory,
                                    val actionActor: ActorRef) extends Environment {
-
-  def getBroadcaster: AkkaBroadcaster = broadcasterFactory.get().asInstanceOf[AkkaBroadcaster]
-
-  def getAkkaCluster: AkkaCluster = akkaCluster
 
 }
