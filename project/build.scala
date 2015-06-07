@@ -20,6 +20,7 @@ object CommentpBuild extends Build {
   lazy val akkaVersion           = "2.3.9"
   lazy val guiceVersion          = "4.0"
   lazy val json4sVersion         = "3.2.11"
+  lazy val scalamockVersion      = "3.2"
 
   lazy val project = Project(
     "commentp",
@@ -63,7 +64,10 @@ object CommentpBuild extends Build {
         "com.typesafe.akka" %% "akka-contrib" % akkaVersion,
         "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
         "org.json4s" %% "json4s-native" % json4sVersion,
-        "org.json4s" %% "json4s-jackson" % json4sVersion
+        "org.json4s" %% "json4s-jackson" % json4sVersion,
+
+        // mocking
+        "org.scalamock" %% "scalamock-scalatest-support" % scalamockVersion % "test"
 
       ),
       scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),

@@ -13,3 +13,11 @@ daemonUser in Linux := normalizedName.value
 daemonGroup in Linux := (daemonUser in Linux).value
 
 mappings in Universal ++= directory("src/main/webapp")
+
+// checkstyle when compile
+
+lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
+
+compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value
+
+(compile in Compile) <<= (compile in Compile) dependsOn compileScalastyle

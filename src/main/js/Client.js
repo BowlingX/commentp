@@ -22,6 +22,8 @@
  * THE SOFTWARE.
  */
 
+'use strict';
+
 import ReconnectingWebSocket from 'ReconnectingWebSocket';
 
 /**
@@ -105,14 +107,14 @@ class Client {
             });
         const promise = new Promise((resolve, reject) => {
             var resultFound = false;
-            if (1 !== this._connection.readyState) {
+            if (this._connection.readyState !== 1) {
                 reject('WebSocket not connected');
             }
             Array.observe(self.actionResponses, function thisObserver(changes) {
                 changes.forEach(change => {
-                    if ('splice' === change.type) {
+                    if (change.type === 'splice') {
                         const result = Array.find(change.object, (addedObject) => {
-                            return addedObject.id && addedObject.id == currentId;
+                            return addedObject.id && addedObject.id === currentId;
                         });
                         self.actionResponses.splice(change.index, 1);
                         if (result) {

@@ -24,7 +24,7 @@ package com.bowlingx.commentp
 
 import javax.inject.Inject
 
-import _root_.akka.actor.ActorRef
+import _root_.akka.actor.{ActorSystem, ActorRef}
 import _root_.akka.pattern.ask
 import _root_.akka.util.Timeout
 import com.bowlingx.commentp.akka.{AkkaBroadcaster, AkkaCluster, DidBroadcast}
@@ -39,15 +39,13 @@ import scala.concurrent.duration.FiniteDuration
  */
 trait Environment {
 
-  val akkaCluster:AkkaCluster
+  val actorSystem:ActorSystem
 
   val actionActor: ActorRef
 
   val broadcasterFactory: BroadcasterFactory
 
   def getBroadcaster: AkkaBroadcaster = broadcasterFactory.get().asInstanceOf[AkkaBroadcaster]
-
-  def getAkkaCluster: AkkaCluster = akkaCluster
 
   /**
    * Will run a given protocol and execute action
@@ -83,7 +81,7 @@ trait Environment {
   }
 }
 
-class ServletEnvironment @Inject()(val akkaCluster: AkkaCluster,
+class ServletEnvironment @Inject()(val actorSystem: ActorSystem,
                                    val broadcasterFactory: BroadcasterFactory,
                                    val actionActor: ActorRef) extends Environment {
 

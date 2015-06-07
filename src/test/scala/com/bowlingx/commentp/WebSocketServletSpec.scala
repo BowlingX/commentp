@@ -22,40 +22,36 @@
  * THE SOFTWARE.
  */
 
-var path = require("path");
-var webpack = require("webpack");
-module.exports = {
-    watch: false,
-    module: {
-        loaders: [
-            {
-                test: /\.jsx?$/,
-                exclude: /node_modules/,
-                loader: 'babel-loader?optional=runtime&sourceMap=inline'
-            }
-        ],
-        postLoaders: [{ //
-            test: /\.js$/,
-            exclude: /(test|node_modules|bower_components|test_helpers)\//,
-            loader: 'istanbul-instrumenter'
-        }],
-        preLoaders: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/, // exclude any and all files in the node_modules folder
-                loader: "eslint-loader"
-            }
-        ]
-    },
-    resolve: {
-        // add bower components and main source to resolved
-        root: [path.join(__dirname, "bower_components"),
-            path.join(__dirname, 'src/main'),
-            path.join(__dirname, 'src/test_helpers')]
-    },
-    plugins: [
-        new webpack.ResolverPlugin(
-            new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin("bower.json", ["main"])
-        )
-    ]
-};
+package com.bowlingx.commentp
+
+import _root_.akka.actor.ActorSystem
+import com.bowlingx.commentp.akka.AkkaBroadcaster
+import org.eclipse.jetty.servlet.ServletContextHandler
+import org.scalatra.servlet.ScalatraListener
+import org.scalatra.test.specs2._
+import org.specs2.time.NoTimeConversions
+
+
+class WebSocketServletSpec extends MutableScalatraSpec with NoTimeConversions {
+
+  override lazy val servletContextHandler = {
+    val handler = new ServletContextHandler(ServletContextHandler.SESSIONS)
+    handler.setContextPath(contextPath)
+    handler.addEventListener(new ScalatraListener)
+    handler.setResourceBase(resourceBasePath)
+    handler
+  }
+
+  "Environment" should {
+    "boot properly" in {
+      "and an actor system must be available in servlet-context" in {
+        servletContextHandler.getServletContext.getAttribute(
+          AkkaBroadcaster.CLUSTER_SYSTEM) must beAnInstanceOf[ActorSystem]
+      }
+    }
+
+
+  }
+}
+
+

@@ -66,7 +66,7 @@ final class WebSocketServlet @Inject()(broadcastFactory: BroadcasterFactory, env
     val postBody = a.req.getReader.readLine()
     // try to extract protocol
     parse(postBody).extractOpt[Protocol] map { action =>
-      implicit val context = env.getAkkaCluster.cluster.dispatcher
+      implicit val context = env.actorSystem.dispatcher
       implicit val timeout = 1 minute
       val uuid = a.req.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID).asInstanceOf[String]
       env.run(action)(timeout) foreach {
