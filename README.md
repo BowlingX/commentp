@@ -37,3 +37,14 @@ To build a new Version you need to have a local `docker` client running:
 ```
 ./build-docker.sh
 ```
+
+## Deployment on DigitalOcean
+
+- https://www.digitalocean.com/community/tutorials/how-to-set-up-a-coreos-cluster-on-digitalocean
+
+## Using `fleetctl` from remote
+
+```
+eval `ssh-agent`
+ssh-add ~/.ssh/id_rsa
+```

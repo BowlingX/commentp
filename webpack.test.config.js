@@ -23,35 +23,43 @@
  */
 
 var path = require("path");
-var webpack = require("webpack");
+var webpack = require("webpack"), fs = require('fs');
 module.exports = {
     watch: false,
     module: {
         loaders: [
             {
+                include: [
+                    path.resolve(__dirname, "src/main/js"),
+                    path.resolve(__dirname, "src/test/js")
+                ],
                 test: /\.jsx?$/,
-                exclude: /node_modules/,
                 loader: 'babel-loader?optional=runtime&sourceMap=inline'
+            }
+        ],
+        preLoaders: [
+            {
+                include: [
+                    path.resolve(__dirname, "src/main/js"),
+                    path.resolve(__dirname, "src/test/js")
+                ],
+                test: /\.js$/,
+                loader: "eslint-loader"
             }
         ],
         postLoaders: [{ //
             test: /\.js$/,
             exclude: /(test|node_modules|bower_components|test_helpers)\//,
             loader: 'istanbul-instrumenter'
-        }],
-        preLoaders: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/, // exclude any and all files in the node_modules folder
-                loader: "eslint-loader"
-            }
-        ]
+        }]
     },
     resolve: {
         // add bower components and main source to resolved
         root: [path.join(__dirname, "bower_components"),
-            path.join(__dirname, 'src/main'),
-            path.join(__dirname, 'src/test_helpers')]
+            path.join(__dirname, 'src/main/test/js'),
+            path.join(__dirname, 'src/main/test/js_helpers'),
+            path.join(__dirname, 'src/main/js')
+        ]
     },
     plugins: [
         new webpack.ResolverPlugin(

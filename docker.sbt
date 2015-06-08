@@ -2,7 +2,7 @@ import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
 
 // docker:
 
-packageName in Docker := "commentp"
+packageName in Docker := "bowlingx/commentp"
 
 maintainer in Docker := "David Heidrich <me@bowlingx.com>"
 

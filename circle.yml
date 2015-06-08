@@ -1,0 +1,21 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - npm install
+    - cat /dev/null | sbt test:compile
+
+test:
+  override:
+    - cat /dev/null | sbt test:test
+    - node_modules/gulp/bin/gulp.js test
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - cat /dev/null | sbt docker:publishLocal
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push bowlingx/commentp
