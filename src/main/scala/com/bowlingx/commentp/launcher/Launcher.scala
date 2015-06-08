@@ -40,10 +40,12 @@ object Launcher extends App with Logging {
   val port = Option(System.getenv("PORT")) flatMap(
     r => Try(r.toInt).toOption) getOrElse Launcher.defaultPort
 
+  info("Booting application")
+
   val server = new Server(port)
   val context = new WebAppContext()
   context.setContextPath("/")
-  context.setResourceBase("../webapp")
+  context.setResourceBase("webapp")
 
   // Disable Directory listing
   context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false")

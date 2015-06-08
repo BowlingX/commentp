@@ -1,5 +1,6 @@
 import NativePackagerHelper._
 
+
 enablePlugins(JavaServerAppPackaging)
 
 maintainer in Linux := "David Heidrich <me@bowlingx.com>"
@@ -21,3 +22,5 @@ lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value
 
 (compile in Compile) <<= (compile in Compile) dependsOn compileScalastyle
+
+
