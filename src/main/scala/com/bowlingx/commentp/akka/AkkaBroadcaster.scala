@@ -38,6 +38,7 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import akka.contrib.pattern.DistributedPubSubMediator.{Subscribe, SubscribeAck}
 import scala.collection.JavaConversions._
+import scala.util.Try
 import scala.util.control.NonFatal
 
 /**
@@ -233,11 +234,11 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
 
   override def broadcastReceivedMessage(message: scala.Any): Unit = {
     val broadcast = message.asInstanceOf[Broadcast]
-    try {
+    Try {
       Option(filter(broadcast.message)) foreach { newMessage =>
         push(new Deliver(newMessage, new AkkaBroadcastFuture(broadcast, newMessage), broadcast.message))
       }
-    } catch {
+    } recover {
       case NonFatal(e) => logger.error(e.getMessage, e)
     }
   }
