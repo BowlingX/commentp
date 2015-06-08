@@ -34,6 +34,7 @@ import org.scalatra._
 import scala.collection.JavaConverters._
 import scala.collection.concurrent.{Map => ConcurrentMap}
 import scala.util.{Failure, Success, Try}
+import org.atmosphere.cpr.AtmosphereResource.TRANSPORT._
 
 /**
  * Action Parameters
@@ -200,7 +201,6 @@ trait AtmosphereServlet extends HttpServlet with Logging {
    */
   private[this] def createMeteor(id: String, action: ActionParams, atmosphereResult: AtmosphereMatch): Meteor = {
 
-    import org.atmosphere.cpr.AtmosphereResource.TRANSPORT._
 
     val m: Meteor = Meteor.build(action.req)
     val b = broadcasterFactory.lookup(id, true).asInstanceOf[Broadcaster]

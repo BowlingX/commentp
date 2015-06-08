@@ -6,12 +6,12 @@ import sbt._
 
 object CommentpBuild extends Build {
 
-  val Organization = "com.bowlingx"
-  val Name = "commentp"
+  val projectOrg = "com.bowlingx"
+  val projectName = "commentp"
 
   // library versions
-  lazy val ScalaVersion          = "2.11.6"
-  lazy val ScalatraVersion       = "2.4.0.RC1"
+  lazy val scalaVersionNum       = "2.11.6"
+  lazy val scalatraVersion       = "2.4.0.RC1"
   lazy val reactiveMongoVersion  = "0.10.5.0.akka23"
   lazy val atmosphereVersion     = "2.3.0"
   lazy val jettyVersion          = "9.1.5.v20140505"
@@ -26,19 +26,19 @@ object CommentpBuild extends Build {
     "commentp",
     file("."),
     settings = ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
-      organization := Organization,
-      name := Name,
+      organization := projectOrg,
+      name := projectName,
       mainClass in Compile := Some("com.bowlingx.commentp.launcher.Launcher"),
       ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
-      scalaVersion := ScalaVersion,
+      scalaVersion := scalaVersionNum,
       resolvers += Classpaths.typesafeReleases,
       resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
       resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
       libraryDependencies ++= Seq(
         // scalatra
-        "org.scalatra" %% "scalatra" % ScalatraVersion,
-        "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
-        "org.scalatra" %% "scalatra-specs2" % ScalatraVersion % "test",
+        "org.scalatra" %% "scalatra" % scalatraVersion,
+        "org.scalatra" %% "scalatra-scalate" % scalatraVersion,
+        "org.scalatra" %% "scalatra-specs2" % scalatraVersion % "test",
         // logback
         "ch.qos.logback" % "logback-classic" % "1.1.2" % "runtime",
         // jetty

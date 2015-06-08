@@ -31,7 +31,7 @@ import org.atmosphere.cpr.{AtmosphereFramework, MeteorServlet}
 
 object Bootstrap {
   def prepareContext(context: ServletContext, system: ActorSystem, injector: Injector): Unit = {
-    context.setAttribute(AkkaBroadcaster.CLUSTER_SYSTEM, system)
+    context.setAttribute(AkkaBroadcaster.clusterSystem, system)
     context.setAttribute(classOf[Injector].getName, injector)
   }
 

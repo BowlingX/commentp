@@ -36,12 +36,15 @@ import org.atmosphere.util.AbstractBroadcasterProxy
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import akka.contrib.pattern.DistributedPubSubMediator.{Subscribe, SubscribeAck}
+import scala.collection.JavaConversions._
+import scala.util.control.NonFatal
 
 /**
  * Constants for Akka Broadcaster
  */
 object AkkaBroadcaster {
-  val CLUSTER_SYSTEM = getClass().getName()
+  val clusterSystem = getClass().getName()
 }
 
 /**
@@ -85,7 +88,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
   var subscriber: ActorRef = null.asInstanceOf[ActorRef]
   // scalastyle:on
 
-  val DID_PUBLISH_TIMEOUT_SECONDS = 6
+  val didPublishTimeoutSeconds = 6
 
   /**
    * Initializes this Broadcaster
@@ -101,13 +104,12 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
 
     /**
      * Actor System, will be resolved through an servlet attribute defined in
-     * [[AkkaBroadcaster.CLUSTER_SYSTEM]]
+     * [[AkkaBroadcaster.clusterSystem]]
      */
-    system = config.getServletContext.getAttribute(AkkaBroadcaster.CLUSTER_SYSTEM).asInstanceOf[ActorSystem]
+    system = config.getServletContext.getAttribute(AkkaBroadcaster.clusterSystem).asInstanceOf[ActorSystem]
     publisher = system.actorOf(Props(new Publisher(id)))
     subscriber = system.actorOf(Props(new Actor with Listeners {
 
-      import akka.contrib.pattern.DistributedPubSubMediator.{Subscribe, SubscribeAck}
       import context.dispatcher
 
       val mediator = DistributedPubSubExtension(context.system).mediator
@@ -136,7 +138,6 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
             gossip(b)
 
           case broadcastedMsg@Broadcast(m, uniqueID) =>
-            import scala.collection.JavaConversions._
 
             // Register listener and notify publisher if message has been broadcast successfully
             val listener = new AtmosphereResourceEventListener {
@@ -145,7 +146,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
               }
 
               def onBroadcast(event: AtmosphereResourceEvent) {
-                system.scheduler.scheduleOnce(DID_PUBLISH_TIMEOUT_SECONDS seconds) {
+                system.scheduler.scheduleOnce(didPublishTimeoutSeconds seconds) {
                   mediator ! Publish(id, DidBroadcast(m, uniqueID))
                 }
                 event.getResource.removeEventListener(this)
@@ -160,7 +161,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
               def onDisconnect(event: AtmosphereResourceEvent) {}
 
               def onResume(event: AtmosphereResourceEvent) {
-                system.scheduler.scheduleOnce(DID_PUBLISH_TIMEOUT_SECONDS seconds) {
+                system.scheduler.scheduleOnce(didPublishTimeoutSeconds seconds) {
                   mediator ! Publish(id, DidBroadcast(m, uniqueID))
                 }
                 event.getResource.removeEventListener(this)
@@ -218,7 +219,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
       if (Option(system).isDefined) {
         // Make Sure we kill our actors when killing the broadcaster, but wait a
         // bit until DidBroadcast Messages are delivered
-        system.scheduler.scheduleOnce(DID_PUBLISH_TIMEOUT_SECONDS * 3 seconds) {
+        system.scheduler.scheduleOnce(didPublishTimeoutSeconds * 3 seconds) {
           publisher ! PoisonPill
           subscriber ! PoisonPill
         }(system.dispatcher)
@@ -237,7 +238,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
         push(new Deliver(newMessage, new AkkaBroadcastFuture(broadcast, newMessage), broadcast.message))
       }
     } catch {
-      case e: Throwable => logger.error(e.getMessage, e)
+      case NonFatal(e) => logger.error(e.getMessage, e)
     }
   }
 
@@ -248,7 +249,4 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
  * @param broadcast message
  */
 class AkkaBroadcastFuture(val broadcast: Broadcast, filteredMessage: Any)
-  extends BroadcasterFuture[Any](filteredMessage) {
-
-
-}
+  extends BroadcasterFuture[Any](filteredMessage)

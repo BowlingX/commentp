@@ -46,7 +46,7 @@ class WebSocketServletSpec extends MutableScalatraSpec with NoTimeConversions {
     "boot properly" in {
       "and an actor system must be available in servlet-context" in {
         servletContextHandler.getServletContext.getAttribute(
-          AkkaBroadcaster.CLUSTER_SYSTEM) must beAnInstanceOf[ActorSystem]
+          AkkaBroadcaster.clusterSystem) must beAnInstanceOf[ActorSystem]
       }
     }
 

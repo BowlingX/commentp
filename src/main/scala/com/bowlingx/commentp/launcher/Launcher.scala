@@ -32,13 +32,13 @@ import scala.util.Try
  * Main Entry point, launches embedded jetty
  */
 object Launcher extends App with Logging {
-  val DEFAULT_PORT = 8080
+  val defaultPort = 8080
 
   import logger._
 
   // read the port from environment
   val port = Option(System.getenv("PORT")) flatMap(
-    r => Try(r.toInt).toOption) getOrElse Launcher.DEFAULT_PORT
+    r => Try(r.toInt).toOption) getOrElse Launcher.defaultPort
 
   val server = new Server(port)
   val context = new WebAppContext()
