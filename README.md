@@ -1,6 +1,8 @@
 commentp
 --------
 
+[![Circle CI](https://circleci.com/gh/BowlingX/commentp.svg?style=svg)](https://circleci.com/gh/BowlingX/commentp)
+
 CommentP is an inline commenting platform
 
 # Setup docker
