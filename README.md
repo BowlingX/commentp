@@ -47,6 +47,7 @@ To build a new Version you need to have a local `docker` client running:
 ## Using `fleetctl` from remote
 
 ```
+export FLEETCTL_TUNNEL=$COREOS_CLOUD_IP
 eval `ssh-agent`
 ssh-add ~/.ssh/id_rsa
 ```
