@@ -7,5 +7,5 @@ TimeoutStartSec=0
 ExecStartPre=-/usr/bin/docker kill commentp-%i
 ExecStartPre=-/usr/bin/docker rm commentp-%i
 ExecStartPre=/usr/bin/docker pull bowlingx/commentp:0.1.0-SNAPSHOT
-ExecStart=/usr/bin/docker run --name commentp-%i bowlingx/commentp:0.1.0-SNAPSHOT
+ExecStart=/usr/bin/docker run --name commentp-%i -p 80:8080 bowlingx/commentp:0.1.0-SNAPSHOT
 ExecStop=/usr/bin/docker stop commentp-%i

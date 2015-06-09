@@ -12,6 +12,7 @@ test:
   override:
     - cat /dev/null | sbt test:test
     - node_modules/gulp/bin/gulp.js test
+    - node_modules/gulp/bin/gulp.js dist
 
 deployment:
   hub:
