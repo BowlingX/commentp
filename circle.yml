@@ -29,3 +29,7 @@ deployment:
       - export FLEETCTL_TUNNEL=$COREOS_CLOUD_IP
       - eval `ssh-agent`
       - ssh-add ~/.ssh/id_rsa
+      - cd ~/commentp/fleet/
+      - ~/fleetctl destroy commentp.service
+      - ~/fleetctl submit commentp.service
+      - ~/fleetctl start commentp.service
