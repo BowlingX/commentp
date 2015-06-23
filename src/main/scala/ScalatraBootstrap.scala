@@ -28,6 +28,7 @@ import com.bowlingx.commentp.controllers.Backend
 import com.bowlingx.commentp.util.Logging
 import com.bowlingx.commentp.{Bootstrap, Environment, ServletEnvironment}
 import com.google.inject.{Guice, Provides}
+import com.sksamuel.elastic4s.ElasticClient
 import com.tzavellas.sse.guice.ScalaModule
 import org.scalatra._
 
@@ -38,8 +39,9 @@ class ScalatraBootstrap extends LifeCycle with Logging {
 
   lazy val system = ClusterSystem("commentp", 1 minute, Some("akka-cluster.conf"), None)
 
-  override def init(context: ServletContext) {
+  lazy val elasticClient = ElasticClient.local
 
+  override def init(context: ServletContext) {
 
     val framework = Bootstrap.createAtmosphere(context)
     val actionActor = system.cluster.actorOf(Props[ProtocolActor])
@@ -49,7 +51,8 @@ class ScalatraBootstrap extends LifeCycle with Logging {
 
       @Provides
       def provideEnvironment(): Environment = {
-        new ServletEnvironment(system.cluster, framework.getBroadcasterFactory, actionActor)
+        new ServletEnvironment(system.cluster,
+          framework.getBroadcasterFactory, actionActor, elasticClient)
       }
     })
     context.mount(injector.getInstance(classOf[Backend]), "/*")
@@ -61,5 +64,6 @@ class ScalatraBootstrap extends LifeCycle with Logging {
   override def destroy(context: ServletContext): Unit = {
     super.destroy(context)
     system.shutdown()
+    elasticClient.close()
   }
 }

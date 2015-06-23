@@ -3,6 +3,11 @@ machine:
     - docker
 
 dependencies:
+  pre:
+    - wget https://github.com/coreos/fleet/releases/download/v0.10.2/fleet-v0.10.2-linux-amd64.tar.gz
+    - tar xvzf fleet-v0.10.2-linux-amd64.tar.gz
+    - cd fleet-v0.10.2-linux-amd64 && cp fleetcl ~/fleetctl
+
   override:
     - docker build -t="bowlingx/commentp-base" .
     - npm install
@@ -21,3 +26,6 @@ deployment:
       - cat /dev/null | sbt docker:publishLocal
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push bowlingx/commentp
+      - export FLEETCTL_TUNNEL=$COREOS_CLOUD_IP
+      - eval `ssh-agent`
+      - ssh-add ~/.ssh/id_rsa

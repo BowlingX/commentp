@@ -32,6 +32,7 @@ import org.atmosphere.cpr.{AtmosphereResource, BroadcasterFactory}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
+import com.sksamuel.elastic4s.ElasticClient
 
 /**
  * Reflects the environment this Application runs in
@@ -44,6 +45,8 @@ trait Environment {
   val actionActor: ActorRef
 
   val broadcasterFactory: BroadcasterFactory
+
+  val elasticClient:ElasticClient
 
   def getBroadcaster: AkkaBroadcaster = broadcasterFactory.get().asInstanceOf[AkkaBroadcaster]
 
@@ -83,6 +86,7 @@ trait Environment {
 
 class ServletEnvironment @Inject()(val actorSystem: ActorSystem,
                                    val broadcasterFactory: BroadcasterFactory,
-                                   val actionActor: ActorRef) extends Environment {
+                                   val actionActor: ActorRef,
+                                   val elasticClient:ElasticClient) extends Environment {
 
 }

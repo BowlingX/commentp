@@ -12,7 +12,7 @@ object CommentpBuild extends Build {
   // library versions
   lazy val scalaVersionNum       = "2.11.6"
   lazy val scalatraVersion       = "2.4.0.RC1"
-  lazy val reactiveMongoVersion  = "0.10.5.0.akka23"
+  lazy val elastic4sVersion      = "1.6.0"
   lazy val atmosphereVersion     = "2.3.0"
   lazy val jettyVersion          = "9.1.5.v20140505"
   lazy val servletApiVersion     = "3.1.0"
@@ -47,14 +47,14 @@ object CommentpBuild extends Build {
         "org.eclipse.jetty" % "jetty-continuation" % jettyVersion % "compile;container",
         "org.eclipse.jetty.websocket" % "websocket-server" % jettyVersion,
         "javax.servlet" % "javax.servlet-api" % servletApiVersion,
-        "org.reactivemongo" %% "reactivemongo" % reactiveMongoVersion,
+        "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion intransitive(),
+        "org.elasticsearch" % "elasticsearch" % "1.6.0",
         // atmosphere
         "org.atmosphere" % "atmosphere-runtime" % atmosphereVersion,
         "org.atmosphere" % "atmosphere-guice" % atmosphereVersion,
         // guice
         "com.google.inject" % "guice" % guiceVersion,
         "com.tzavellas" %% "sse-guice" % "0.7.2",
-
         // Akka
         "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion % "test",
         "com.typesafe.akka" %% "akka-actor" % akkaVersion,
