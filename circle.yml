@@ -6,7 +6,7 @@ dependencies:
   pre:
     - wget https://github.com/coreos/fleet/releases/download/v0.10.2/fleet-v0.10.2-linux-amd64.tar.gz
     - tar xvzf fleet-v0.10.2-linux-amd64.tar.gz
-    - cd fleet-v0.10.2-linux-amd64 && cp ./fleetcl ~/
+    - cd fleet-v0.10.2-linux-amd64 && cp ./fleetctl ~/
 
   override:
     - docker build -t="bowlingx/commentp-base" .
