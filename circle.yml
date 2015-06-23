@@ -26,7 +26,6 @@ deployment:
       - cat /dev/null | sbt docker:publishLocal
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push bowlingx/commentp
-      - export FLEETCTL_TUNNEL=$COREOS_CLOUD_IP
       - eval `ssh-agent`
       - ssh-add ~/.ssh/id_46.101.159.127.pub
       - cd ~/commentp/fleet/
