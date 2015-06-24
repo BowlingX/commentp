@@ -28,7 +28,7 @@ deployment:
       - docker push bowlingx/commentp
       - eval `ssh-agent`
       - chmod +x ~/commentp/deploy/ssh-add.sh
-      - ~/commentp/deploy/ssh-add.sh
+      - ~/commentp/deploy/ssh-add.sh ~/.ssh/id_46.101.159.127.pub
       - cd ~/commentp/fleet/
       - ~/fleetctl destroy commentp.service
       - ~/fleetctl submit commentp.service
