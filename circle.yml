@@ -7,7 +7,8 @@ dependencies:
     - wget https://github.com/coreos/fleet/releases/download/v0.10.2/fleet-v0.10.2-linux-amd64.tar.gz
     - tar xvzf fleet-v0.10.2-linux-amd64.tar.gz
     - cd fleet-v0.10.2-linux-amd64 && cp ./fleetctl ~/
-    - ssh-keyscan -Ht rsa $COREOS_CLOUD_IP >> ~/.ssh/known_hosts
+    - mkdir -p .fleetctl
+    - ssh-keyscan -Ht rsa $COREOS_CLOUD_IP >> ~/.fleetctl/known_hosts
   override:
     - docker build -t="bowlingx/commentp-base" .
     - npm install
