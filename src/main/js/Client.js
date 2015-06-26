@@ -21,10 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 'use strict';
 
+const EVENT_MESSAGE = 'commentp.message';
+
+
 import ReconnectingWebSocket from 'ReconnectingWebSocket';
+import eventEmitter from 'event-emitter';
 
 /**
  * @type {string}
@@ -41,6 +44,10 @@ const ERROR_FRAME = '!';
  * Basic WebSocket Client that confirms to the `commentp` Protocol
  */
 class Client {
+    /**
+     * @param {string} channelId
+     * @param {object} options
+     */
     constructor(channelId, options) {
         this.channelId = channelId;
         this.currentRequestId = 0;
@@ -50,19 +57,23 @@ class Client {
             // timeout for actions
             requestTimeout: 10000,
             // base webSocket URI
-            baseUrl: 'ws://localhost:8080/sock/sub/'
+            baseUrl: 'ws://commentp.com/sock/sub/'
         };
 
         Object.assign(this.options, options);
+
+        // setup events
+        eventEmitter(this);
     }
 
     /**
      * Factory to create a new Client connection
-     * @param channelId
+     * @param {string} channelId
+     * @param {object} options
      * @returns {Promise}
      */
-    static connect(channelId) {
-        const client = new Client(channelId);
+    static connect(channelId, options) {
+        const client = new Client(channelId, options);
         client.promise = new Promise(resolve => {
             const connection = new ReconnectingWebSocket(client.options.baseUrl + channelId, []);
             client._connection = connection;
@@ -73,6 +84,8 @@ class Client {
                         const result = JSON.parse(msg);
                         if (result && result.id) {
                             client.actionResponses.push(result);
+                        } else if (result) {
+                            client.emit(EVENT_MESSAGE, result);
                         }
                     } catch (e) {
                         console.error("Could not parse JSON response", e);

@@ -2,7 +2,8 @@
   "name": "commentp-client",
   "version": "0.1.0",
   "dependencies": {
-    "ReconnectingWebSocket": "git://github.com/joewalnes/reconnecting-websocket.git#1.0.0"
+    "ReconnectingWebSocket": "git://github.com/joewalnes/reconnecting-websocket.git#1.0.0",
+    "event-emitter": "^0.3.3"
   },
   "main": [],
   "repository": {
@@ -10,10 +11,7 @@
     "url": "git@github.com:BowlingX/commentp.git"
   },
   "author": "David Heidrich",
-  "license": {
-    "type": "MIT",
-    "url": "https://github.com/BowlingX/commentp/blob/master/LICENSE"
-  },
+  "license": "MIT",
   "devDependencies": {
     "autoprefixer-core": "^5.2.0",
     "babel": "^5.5.4",

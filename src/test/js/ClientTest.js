@@ -29,8 +29,15 @@ import Client from 'Client';
 
 
 describe("Client", () => {
+
     it("Should be constructable", () => {
         const aClient = new Client("a-channel");
         expect(aClient.channelId).toBe("a-channel");
+    });
+
+    it("Should able to listen to events", () => {
+        const aClient = new Client("a-channel");
+        expect(aClient.once).toBeDefined();
+        expect(aClient.on).toBeDefined();
     });
 });
