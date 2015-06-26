@@ -44,7 +44,7 @@ object Bootstrap {
     reg.setAsyncSupported(true)
     reg.setInitParameter("org.atmosphere.servlet", classOf[WebSocketServlet].getName)
     reg.addMapping("/sock/*")
-    reg.setInitParameter("org.atmosphere.cpr.AtmosphereInterceptor", "CorsInterceptor")
+    reg.setInitParameter("org.atmosphere.cpr.AtmosphereInterceptor", "org.atmosphere.interceptor.CorsInterceptor")
     framework
   }
 }
