@@ -30,7 +30,6 @@ deployment:
       - eval `ssh-agent`
       - chmod +x ~/commentp/deploy/ssh-add.sh
       - ~/commentp/deploy/ssh-add.sh ~/.ssh/id_$COREOS_CLOUD_IP.pub
-      - cd ~/commentp/fleet/
-      - ~/fleetctl destroy commentp.service
-      - ~/fleetctl submit commentp.service
-      - ~/fleetctl start commentp.service
+      - ~/fleetctl destroy ~/commentp/fleet/commentp.service
+      - ~/fleetctl submit ~/commentp/fleet/commentp.service
+      - ~/fleetctl start ~/commentp/fleet/commentp.service
