@@ -10,6 +10,7 @@ dependencies:
     - mkdir -p ~/.fleetctl
     - ssh-keyscan -t rsa $COREOS_CLOUD_IP >> ~/.fleetctl/known_hosts
   override:
+    - docker build -t="bowlingx/commentp-base" .
     - npm install
     - cat /dev/null | sbt test:compile
 
