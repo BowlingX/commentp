@@ -23,14 +23,14 @@ deployment:
   hub:
     branch: master
     commands:
+      - ssh -o "StrictHostKeyChecking no" core@$COREOS_CLOUD_IP
       - cat /dev/null | sbt docker:publishLocal
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push bowlingx/commentp
       - eval `ssh-agent`
       - chmod +x ~/commentp/deploy/ssh-add.sh
-      - ~/commentp/deploy/ssh-add.sh ~/.ssh/id_46.101.159.127.pub
+      - ~/commentp/deploy/ssh-add.sh ~/.ssh/id_$COREOS_CLOUD_IP.pub
       - cd ~/commentp/fleet/
-      - ssh-keyscan -t rsa 46.101.159.127 2>&1 >> ~/.ssh/known_hosts
       - ~/fleetctl destroy commentp.service
       - ~/fleetctl submit commentp.service
       - ~/fleetctl start commentp.service
