@@ -8,7 +8,7 @@ dependencies:
     - tar xvzf fleet-v0.10.2-linux-amd64.tar.gz
     - cd fleet-v0.10.2-linux-amd64 && cp ./fleetctl ~/
     - mkdir -p ~/.fleetctl
-    - ssh-keyscan -Ht rsa $COREOS_CLOUD_IP >> ~/.fleetctl/known_hosts
+    - ssh-keyscan -t rsa $COREOS_CLOUD_IP >> ~/.fleetctl/known_hosts
   override:
     - docker build -t="bowlingx/commentp-base" .
     - npm install
