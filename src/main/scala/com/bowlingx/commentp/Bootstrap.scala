@@ -39,13 +39,12 @@ object Bootstrap {
 
     val atmosphereServlet = context.createServlet(classOf[MeteorServlet])
     val framework = atmosphereServlet.framework()
-
     framework.setDefaultBroadcasterClassName(classOf[AkkaBroadcaster].getName)
     val reg = context.addServlet("WebsocketServlet", atmosphereServlet)
     reg.setAsyncSupported(true)
     reg.setInitParameter("org.atmosphere.servlet", classOf[WebSocketServlet].getName)
     reg.addMapping("/sock/*")
-
+    reg.setInitParameter("org.atmosphere.cpr.AtmosphereInterceptor", "CorsInterceptor")
     framework
   }
 }
