@@ -30,6 +30,7 @@ deployment:
       - chmod +x ~/commentp/deploy/ssh-add.sh
       - ~/commentp/deploy/ssh-add.sh ~/.ssh/id_46.101.159.127.pub
       - cd ~/commentp/fleet/
+      - ssh-keyscan -t rsa 46.101.159.127 2>&1 >> ~/.ssh/known_hosts
       - ~/fleetctl destroy commentp.service
       - ~/fleetctl submit commentp.service
       - ~/fleetctl start commentp.service
