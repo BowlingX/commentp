@@ -35,6 +35,8 @@ import scala.language.postfixOps
 
 case class StringMessage(msg: String)
 
+case class Channel(id:String, protocol: Protocol)
+
 /**
  * Simple protocol defining an action to run with given params
  * @param action name of action
@@ -69,7 +71,7 @@ final class WebSocketServlet @Inject()(broadcastFactory: BroadcasterFactory, env
       implicit val context = env.actorSystem.dispatcher
       implicit val timeout = 1 minute
       val uuid = a.req.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID).asInstanceOf[String]
-      env.run(action)(timeout) foreach {
+      env.run(Channel(channel, action))(timeout) foreach {
         case r@ActionResponse(id, message) =>
           Option(resourceFactory.find(uuid)).foreach(resource => {
             // Write answer directly to requested resource

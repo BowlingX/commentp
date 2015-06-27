@@ -23,7 +23,7 @@
  */
 'use strict';
 
-const EVENT_MESSAGE = 'commentp.message';
+export const EVENT_MESSAGE = 'commentp.message';
 
 
 import ReconnectingWebSocket from 'ReconnectingWebSocket';
@@ -43,7 +43,7 @@ const ERROR_FRAME = '!';
 /**
  * Basic WebSocket Client that confirms to the `commentp` Protocol
  */
-class Client {
+export class Client {
     /**
      * @param {string} channelId
      * @param {object} options
@@ -57,7 +57,8 @@ class Client {
             // timeout for actions
             requestTimeout: 10000,
             // base webSocket URI
-            baseUrl: 'ws://commentp.com/sock/sub/'
+            baseUrl: (process.env.NODE_ENV === 'production') ?
+                'ws://commentp.com/sock/sub/' : 'ws://localhost:8080/sock/sub'
         };
 
         Object.assign(this.options, options);
@@ -69,7 +70,7 @@ class Client {
     /**
      * Factory to create a new Client connection
      * @param {string} channelId
-     * @param {object} options
+     * @param {object} [options]
      * @returns {Promise}
      */
     static connect(channelId, options) {
@@ -96,7 +97,7 @@ class Client {
             connection.onopen = (e) => {
                 if (!e.isReconnect) {
                     resolve(client);
-                    console.info(`did connect to server with ID: ${channelId}`);
+                    console.info(`did connect to server with channel-id: ${channelId}`);
                 }
             };
 
@@ -127,11 +128,12 @@ class Client {
                 changes.forEach(change => {
                     if (change.type === 'splice') {
                         const result = Array.find(change.object, (addedObject) => {
-                            return addedObject.id && addedObject.id === currentId;
+                            return addedObject.id && parseInt(addedObject.id) === currentId;
                         });
                         self.actionResponses.splice(change.index, 1);
                         if (result) {
                             resultFound = true;
+                            console.info(`got action response for id: ${currentId}`);
                             // stop observing till the result has been found
                             Array.unobserve(self.actionResponses, thisObserver);
                             resolve(result);
@@ -145,7 +147,7 @@ class Client {
                         Array.unobserve(self.actionResponses, thisObserver);
                     }
                 }, this.options.requestTimeout);
-            });
+            }.bind(this));
         });
 
         this._connection.send(action);
@@ -159,5 +161,3 @@ class Client {
         this._connection.close();
     }
 }
-
-export default Client;

@@ -23,16 +23,35 @@
 package com.bowlingx.commentp.akka
 
 import akka.actor.Actor
-import com.bowlingx.commentp.Protocol
+import com.bowlingx.commentp.util.Logging
+import com.bowlingx.commentp.{Channel, Protocol}
+import org.atmosphere.cpr.{Broadcaster, BroadcasterFactory}
+import org.json4s.JsonAST.{JInt, JString}
 
-case class ActionResponse(id:String, result:Any)
+case class ActionResponse(id: String, result: Any)
+
+case class MarkingResponse(startOffset: Int, endOffset: Int, startContainer: String, endContainer: String)
+
 /**
  * Handles protocols
  */
-class ProtocolActor extends Actor {
+class ProtocolActor(broadcastFactory: BroadcasterFactory) extends Actor with Logging {
 
-  def receive : Receive = {
-    case Protocol("init", id,  params) =>
-      sender ! ActionResponse(id, "A test")
+  val VOID_RESULT = "OK"
+  val INVALID_RESULT = "ER"
+
+  def receive: Receive = {
+    case Channel(_, Protocol("init", id, params)) =>
+      sender ! ActionResponse(id, VOID_RESULT)
+
+    case Channel(_@channel, Protocol("mark", id, params)) =>
+      params.values.toList match {
+        case List(startOffset: JInt, endOffset: JInt, startContainer: JString, endContainer: JString) =>
+          broadcastFactory.lookup(channel, true).asInstanceOf[Broadcaster].broadcast(
+            MarkingResponse(startOffset.num.intValue(), endOffset.num.intValue(), startContainer.s, endContainer.s))
+          sender ! ActionResponse(id, VOID_RESULT)
+        case _ =>
+          sender ! ActionResponse(id, INVALID_RESULT)
+      }
   }
 }

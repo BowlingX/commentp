@@ -49,7 +49,7 @@ module.exports = {
             path.join(__dirname, 'src/main/js')]
     },
     entry: {
-        'client': ['Client']
+        'app': ['App']
     },
     output: {
         filename: '[name].min.js',
@@ -58,6 +58,7 @@ module.exports = {
         sourceMapFilename: '[name].min.map'
     },
     plugins: [
+        new webpack.EnvironmentPlugin(['NODE_ENV']),
         new webpack.ResolverPlugin(
             new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin("bower.json", ["main"])
         ),

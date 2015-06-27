@@ -51,13 +51,13 @@ trait Environment {
   def getBroadcaster: AkkaBroadcaster = broadcasterFactory.get().asInstanceOf[AkkaBroadcaster]
 
   /**
-   * Will run a given protocol and execute action
-   * @param p protocol
+   * Will run a given channel with protocol and execute action
+   * @param c Channel
    * @param timeout a timeout until the future should be completed
    * @return
    */
-  def run(p: Protocol)(implicit timeout: Timeout): Future[Any] = {
-    actionActor ? p
+  def run(c: Channel)(implicit timeout: Timeout): Future[Any] = {
+    actionActor ? c
   }
 
   /**

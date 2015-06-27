@@ -44,7 +44,7 @@ class ScalatraBootstrap extends LifeCycle with Logging {
   override def init(context: ServletContext) {
 
     val framework = Bootstrap.createAtmosphere(context)
-    val actionActor = system.cluster.actorOf(Props[ProtocolActor])
+    val actionActor = system.cluster.actorOf(Props(new ProtocolActor(framework.getBroadcasterFactory)))
 
     val injector = Guice.createInjector(new ScalaModule() {
       def configure(): Unit = {}
