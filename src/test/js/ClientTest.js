@@ -25,7 +25,7 @@
 
 'use strict';
 
-import Client from 'Client';
+import {Client} from 'Client';
 
 
 describe("Client", () => {

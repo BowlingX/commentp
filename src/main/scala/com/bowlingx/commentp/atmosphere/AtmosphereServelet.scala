@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
 
 import com.bowlingx.commentp.util.Logging
+import org.atmosphere.cpr.AtmosphereResource.TRANSPORT._
 import org.atmosphere.cpr.BroadcastFilter.BroadcastAction
 import org.atmosphere.cpr.{AtmosphereResource, Broadcaster, BroadcasterFactory, Meteor, PerRequestBroadcastFilter}
 import org.eclipse.jetty.http.HttpStatus
@@ -34,7 +35,6 @@ import org.scalatra._
 import scala.collection.JavaConverters._
 import scala.collection.concurrent.{Map => ConcurrentMap}
 import scala.util.{Failure, Success, Try}
-import org.atmosphere.cpr.AtmosphereResource.TRANSPORT._
 
 /**
  * Action Parameters
@@ -60,6 +60,7 @@ trait AtmosphereServlet extends HttpServlet with Logging {
   private[this] val _routes: ConcurrentMap[HttpMethod, Seq[Action]] =
     new ConcurrentHashMap[HttpMethod, Seq[Action]].asScala
 
+  val CHANNEL_PARAMETER = 'channel
 
   val broadcasterFactory: BroadcasterFactory
 
@@ -76,6 +77,7 @@ trait AtmosphereServlet extends HttpServlet with Logging {
   override def doPost(req: HttpServletRequest, resp: HttpServletResponse) {
     handle(Post, req, resp)
   }
+
   // scalastyle:off
 
   /**
@@ -123,6 +125,7 @@ trait AtmosphereServlet extends HttpServlet with Logging {
       case _ =>
     }
   }
+
   // scalastyle:on
 
 
@@ -177,19 +180,21 @@ trait AtmosphereServlet extends HttpServlet with Logging {
 
 
   /**
-   * Registers an atmosphere Request based on request url
-   * @param pattern pattern to match
-   * @param block atmosphere partial matching
+   * Listens to a given channel, a parameter `:channel` must be present in the URL
+   * @param pattern
+   * @param block
    * @return
    */
-  def atmosphereGet(pattern: String)(block: AtmosphereMatch): Unit = {
+  def channel(pattern: String)(block: AtmosphereMatch): Unit = {
     get(pattern) {
       a =>
-        val m = createMeteor(a.req.getRequestURI, a, block)
-        m suspend -1
+        a.routeParams.get(CHANNEL_PARAMETER).headOption.flatMap(_.headOption).foreach { channel =>
+          log(channel)
+          val m = createMeteor(channel, a, block)
+          m suspend -1
+        }
         Unit
     }
-
   }
 
   /**

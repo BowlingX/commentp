@@ -33,12 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (node) {
         const channel = node.getAttribute(ATTR_COMMENTP);
         Client.connect(channel).then((client) => {
-            console.log(client.action('mark', {
+            client.action('mark', {
                 startOffset: 1,
                 endOffset: 2,
                 startContainer: 'p',
                 endContainer: 'x'
-            }));
+            }).then((r) => {
+                console.log(r);
+            });
         });
     }
 

@@ -58,7 +58,7 @@ export class Client {
             requestTimeout: 10000,
             // base webSocket URI
             baseUrl: (process.env.NODE_ENV === 'production') ?
-                'ws://commentp.com/sock/sub/' : 'ws://localhost:8080/sock/sub'
+                'ws://commentp.com/sock/sub/' : 'ws://localhost:8080/sock/sub/'
         };
 
         Object.assign(this.options, options);
@@ -124,7 +124,7 @@ export class Client {
             if (this._connection.readyState !== 1) {
                 reject('WebSocket not connected');
             }
-            Array.observe(self.actionResponses, function thisObserver(changes) {
+            const observer = function(changes) {
                 changes.forEach(change => {
                     if (change.type === 'splice') {
                         const result = Array.find(change.object, (addedObject) => {
@@ -135,19 +135,21 @@ export class Client {
                             resultFound = true;
                             console.info(`got action response for id: ${currentId}`);
                             // stop observing till the result has been found
-                            Array.unobserve(self.actionResponses, thisObserver);
+                            Array.unobserve(self.actionResponses, observer);
                             resolve(result);
                         }
                     }
                 });
+            }.bind(this);
 
-                setTimeout(function () {
-                    if (!resultFound) {
-                        reject('Timeout');
-                        Array.unobserve(self.actionResponses, thisObserver);
-                    }
-                }, this.options.requestTimeout);
-            }.bind(this));
+            Array.observe(self.actionResponses, observer);
+
+            setTimeout(function () {
+                if (!resultFound) {
+                    reject(`Got timeout for id: ${currentId}`);
+                    Array.unobserve(self.actionResponses, observer);
+                }
+            }, this.options.requestTimeout);
         });
 
         this._connection.send(action);
