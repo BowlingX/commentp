@@ -24,8 +24,12 @@
 'use strict';
 
 import {Client} from 'Client';
+import Marklib from 'marklib';
+import Util from 'flexcss/src/main/util/Util';
 
 const ATTR_COMMENTP = 'data-commentp';
+
+const TIMEOUT = 250;
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -33,14 +37,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (node) {
         const channel = node.getAttribute(ATTR_COMMENTP);
         Client.connect(channel).then((client) => {
-            client.action('mark', {
-                startOffset: 1,
-                endOffset: 2,
-                startContainer: 'p',
-                endContainer: 'x'
-            }).then((r) => {
-                console.log(r);
+            let timeout;
+            document.addEventListener('selectionchange', (e) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    const selection = document.getSelection();
+                    if (selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0),
+                            isPartOfNode = Util.isPartOfNode(range.commonAncestorContainer, node);
+                        if (isPartOfNode) {
+                            var clientRect = range.getBoundingClientRect();
+                            if (clientRect.width > 0) {
+
+                            }
+                        }
+                    }
+                }, TIMEOUT);
             });
+
         });
     }
 

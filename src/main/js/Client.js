@@ -140,7 +140,7 @@ export class Client {
                         }
                     }
                 });
-            }.bind(this);
+            };
 
             Array.observe(self.actionResponses, observer);
 

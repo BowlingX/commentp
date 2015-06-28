@@ -23,7 +23,7 @@
  */
 
 var path = require("path");
-var webpack = require("webpack");
+var webpack = require("webpack"), fs = require('fs');
 module.exports = {
     watch: false,
     devtool: "source-map",
@@ -31,7 +31,10 @@ module.exports = {
         loaders: [
             {
                 test: /\.jsx?$/,
-                exclude: /node_modules/,
+                include: [
+                    path.resolve(__dirname, "src/main/js"),
+                    fs.realpathSync(path.resolve(__dirname, "node_modules/flexcss/src/main"))
+                ],
                 loader: 'babel-loader?optional=runtime&sourceMap=inline'
             }
         ],
@@ -45,8 +48,10 @@ module.exports = {
     },
     resolve: {
         // add bower components and main source to resolved
-        root: [path.join(__dirname, "bower_components"),
-            path.join(__dirname, 'src/main/js')]
+        root: [
+            path.join(__dirname, 'src/main/js'),
+            path.join(__dirname, 'node_modules/flexcss/src/main')
+        ]
     },
     entry: {
         'app': ['App']

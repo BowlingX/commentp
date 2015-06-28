@@ -67,5 +67,5 @@ jrebel.lic
 
 # paulp script
 /.lib/
-
+node_modules
 src/main/webapp/static/build
