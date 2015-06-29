@@ -202,6 +202,7 @@ class AkkaBroadcaster() extends AbstractBroadcasterProxy with Logging {
           }
           self ! PoisonPill
           subscriber ! Deafen(self)
+        case _ => logger.debug("skipped unprocessable message")
       }
     })))
 

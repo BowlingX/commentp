@@ -24,7 +24,7 @@ package com.bowlingx.commentp
 
 import javax.inject.Inject
 
-import com.bowlingx.commentp.akka.{MarkingResponse, ActionResponse}
+import com.bowlingx.commentp.akka.{ActionResponse, MarkingResponse}
 import com.bowlingx.commentp.atmosphere.AtmosphereServlet
 import org.atmosphere.cpr.{ApplicationConfig, AtmosphereResourceFactory, BroadcasterFactory}
 import org.json4s._
@@ -35,7 +35,7 @@ import scala.language.postfixOps
 
 case class StringMessage(msg: String)
 
-case class Channel(id:String, protocol: Protocol)
+case class Channel(id: String, protocol: Protocol)
 
 /**
  * Simple protocol defining an action to run with given params
@@ -61,7 +61,7 @@ final class WebSocketServlet @Inject()(broadcastFactory: BroadcasterFactory, env
   // subscribe endpoint
   channel(channel) {
     case (action, message: StringMessage) => Some(compact(render(Extraction.decompose(message))))
-    case (action, message:MarkingResponse) =>  Some(compact(render(Extraction.decompose(message))))
+    case (action, message: MarkingResponse) => Some(compact(render(Extraction.decompose(message))))
   }
 
   // publish endpoint
@@ -72,13 +72,14 @@ final class WebSocketServlet @Inject()(broadcastFactory: BroadcasterFactory, env
       implicit val context = env.actorSystem.dispatcher
       implicit val timeout = 1 minute
       val uuid = a.req.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID).asInstanceOf[String]
-      val channelName = a.routeParams.get('channel).head.head
-      env.run(Channel(channelName, action))(timeout) foreach {
-        case r@ActionResponse(id, message) =>
-          Option(resourceFactory.find(uuid)).foreach(resource => {
-            // Write answer directly to requested resource
-            resource.write(compact(render(Extraction.decompose(r))))
-          })
+      a.routeParams.get('channel).flatMap(_.headOption) foreach { channelName =>
+        env.run(Channel(channelName, action))(timeout) foreach {
+          case r@ActionResponse(id, message) =>
+            Option(resourceFactory.find(uuid)).foreach(resource => {
+              // Write answer directly to requested resource
+              resource.write(compact(render(Extraction.decompose(r))))
+            })
+        }
       }
       ""
     } getOrElse "!"

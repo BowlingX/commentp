@@ -25,7 +25,7 @@ package com.bowlingx.commentp.akka
 import akka.actor.Actor
 import com.bowlingx.commentp.util.Logging
 import com.bowlingx.commentp.{Channel, Protocol}
-import org.atmosphere.cpr.{Broadcaster, BroadcasterFactory}
+import org.atmosphere.cpr.BroadcasterFactory
 import org.json4s.JsonAST.{JInt, JString}
 
 case class ActionResponse(id: String, result: Any)
@@ -54,5 +54,6 @@ class ProtocolActor(broadcastFactory: BroadcasterFactory) extends Actor with Log
         case _ =>
           sender ! ActionResponse(id, INVALID_RESULT)
       }
+    case _ => logger.debug("received unimplemented action")
   }
 }
