@@ -90,6 +90,7 @@ export class Client {
                         }
                     } catch (e) {
                         console.error("Could not parse JSON response", e);
+                        throw e;
                     }
                 }
             };

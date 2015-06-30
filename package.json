@@ -5,7 +5,7 @@
     "ReconnectingWebSocket": "git://github.com/joewalnes/reconnecting-websocket.git#1.0.0",
     "event-emitter": "^0.3.3",
     "flexcss":"^0.4.22",
-    "marklib":"^0.4.6"
+    "marklib":"^0.4.7"
   },
   "main": [],
   "repository": {

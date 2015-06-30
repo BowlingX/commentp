@@ -30,8 +30,9 @@ import org.json4s.JsonAST.{JInt, JString}
 
 case class ActionResponse(id: String, result: Any)
 
-case class MarkingResponse(startOffset: Int, endOffset: Int, startContainer: String, endContainer: String)
+case class MarkingResponse(startOffset: Int, endOffset: Int, startContainerPath: String, endContainerPath: String)
 
+case class InitiatedMarkingResponse(atmosphereUuid:String, marking:MarkingResponse)
 /**
  * Handles protocols
  */
@@ -41,15 +42,16 @@ class ProtocolActor(broadcastFactory: BroadcasterFactory) extends Actor with Log
   val INVALID_RESULT = "ER"
 
   def receive: Receive = {
-    case Channel(_, Protocol("init", id, params)) =>
-      sender ! ActionResponse(id, VOID_RESULT)
-
-    case Channel(_@channel, Protocol("mark", id, params)) =>
+    case Channel(_@channel, Protocol("mark", id, params), uuid) =>
       params.values.toList match {
         case List(startOffset: JInt, endOffset: JInt, startContainer: JString, endContainer: JString) =>
           logger.info(channel)
+
           broadcastFactory.lookup(channel, true).asInstanceOf[AkkaBroadcaster].broadcast(
-            MarkingResponse(startOffset.num.intValue(), endOffset.num.intValue(), startContainer.s, endContainer.s))
+            InitiatedMarkingResponse(uuid,
+              MarkingResponse(startOffset.num.intValue(),
+                endOffset.num.intValue(), startContainer.s, endContainer.s)))
+
           sender ! ActionResponse(id, VOID_RESULT)
         case _ =>
           sender ! ActionResponse(id, INVALID_RESULT)

@@ -23,13 +23,13 @@
  */
 'use strict';
 
-import {Client} from 'Client';
+import {Client, EVENT_MESSAGE} from 'Client';
 import Marklib from 'marklib';
 import Util from 'flexcss/src/main/util/Util';
 
 const ATTR_COMMENTP = 'data-commentp';
 
-const TIMEOUT = 250;
+const TIMEOUT = 30;
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const channel = node.getAttribute(ATTR_COMMENTP);
         Client.connect(channel).then((client) => {
             let timeout;
-            document.addEventListener('selectionchange', (e) => {
+            document.addEventListener('mouseup', () => {
                 clearTimeout(timeout);
                 timeout = setTimeout(() => {
                     const selection = document.getSelection();
@@ -48,13 +48,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (isPartOfNode) {
                             var clientRect = range.getBoundingClientRect();
                             if (clientRect.width > 0) {
-
+                                const marking = new Marklib.Rendering(document, 'marking', node);
+                                const result = marking.renderWithRange(range);
+                                client.action('mark', result);
+                                selection.removeAllRanges();
                             }
                         }
                     }
                 }, TIMEOUT);
             });
 
+            client.on(EVENT_MESSAGE, (msg) => {
+                // FIXME: Create a queue :)
+                const renderer = new Marklib.Rendering(document, 'marking-remote', node);
+                renderer.renderWithResult(msg);
+            });
         });
     }
 

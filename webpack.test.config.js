@@ -23,7 +23,7 @@
  */
 
 var path = require("path");
-var webpack = require("webpack"), fs = require('fs');
+var webpack = require("webpack");
 module.exports = {
     watch: false,
     module: {
