@@ -28,7 +28,7 @@ export const EVENT_MESSAGE = 'commentp.message';
 
 import ReconnectingWebSocket from 'ReconnectingWebSocket';
 import eventEmitter from 'event-emitter';
-
+import {ArrayObserver} from 'observe-js';
 /**
  * @type {string}
  */
@@ -85,6 +85,7 @@ export class Client {
                         const result = JSON.parse(msg);
                         if (result && result.id) {
                             client.actionResponses.push(result);
+                            global.Platform.performMicrotaskCheckpoint();
                         } else if (result) {
                             client.emit(EVENT_MESSAGE, result);
                         }
@@ -125,30 +126,27 @@ export class Client {
             if (this._connection.readyState !== 1) {
                 reject('WebSocket not connected');
             }
-            const observer = function(changes) {
-                changes.forEach(change => {
-                    if (change.type === 'splice') {
-                        const result = Array.find(change.object, (addedObject) => {
-                            return addedObject.id && parseInt(addedObject.id) === currentId;
-                        });
-                        self.actionResponses.splice(change.index, 1);
-                        if (result) {
-                            resultFound = true;
-                            console.info(`got action response for id: ${currentId}`);
-                            // stop observing till the result has been found
-                            Array.unobserve(self.actionResponses, observer);
-                            resolve(result);
-                        }
+
+            const observer = new ArrayObserver(self.actionResponses);
+            let timeout;
+            observer.open((splices) => {
+                splices.forEach((change)  => {
+                    const maybeResult = self.actionResponses[change.index];
+                    if (maybeResult.id && parseInt(maybeResult.id) === currentId) {
+                        resultFound = true;
+                        observer.close();
+                        console.info(`got action response for id: ${currentId}`);
+                        clearTimeout(timeout);
+                        resolve(maybeResult);
                     }
                 });
-            };
-
-            Array.observe(self.actionResponses, observer);
-
-            setTimeout(function () {
+            });
+            timeout = setTimeout(function () {
                 if (!resultFound) {
                     reject(`Got timeout for id: ${currentId}`);
-                    Array.unobserve(self.actionResponses, observer);
+                    if(observer) {
+                        observer.close();
+                    }
                 }
             }, this.options.requestTimeout);
         });

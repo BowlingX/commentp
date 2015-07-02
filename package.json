@@ -4,8 +4,9 @@
   "dependencies": {
     "ReconnectingWebSocket": "git://github.com/joewalnes/reconnecting-websocket.git#1.0.0",
     "event-emitter": "^0.3.3",
-    "flexcss":"^0.4.22",
-    "marklib":"^0.4.7"
+    "flexcss": "^0.4.22",
+    "marklib": "^0.4.7",
+    "observe-js": "^0.4.2"
   },
   "main": [],
   "repository": {
