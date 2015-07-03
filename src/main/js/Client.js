@@ -25,10 +25,10 @@
 
 export const EVENT_MESSAGE = 'commentp.message';
 
-
 import ReconnectingWebSocket from 'ReconnectingWebSocket';
 import eventEmitter from 'event-emitter';
 import {ArrayObserver} from 'observe-js';
+
 /**
  * @type {string}
  */
@@ -130,7 +130,7 @@ export class Client {
             const observer = new ArrayObserver(self.actionResponses);
             let timeout;
             observer.open((splices) => {
-                splices.forEach((change)  => {
+                splices.forEach((change) => {
                     const maybeResult = self.actionResponses[change.index];
                     if (maybeResult.id && parseInt(maybeResult.id) === currentId) {
                         resultFound = true;
@@ -144,7 +144,7 @@ export class Client {
             timeout = setTimeout(function () {
                 if (!resultFound) {
                     reject(`Got timeout for id: ${currentId}`);
-                    if(observer) {
+                    if (observer) {
                         observer.close();
                     }
                 }

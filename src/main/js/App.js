@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 if (range.startContainer.nodeType === Node.TEXT_NODE
                                     && range.endContainer.nodeType === Node.TEXT_NODE) {
                                     const result = marking.renderWithRange(range);
-                                    console.log(range);
                                     client.action('mark', result);
                                     selection.removeAllRanges();
                                 }
