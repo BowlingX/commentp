@@ -23,6 +23,8 @@
  */
 'use strict';
 
+require('styles/main.scss');
+
 import {Client, EVENT_MESSAGE} from 'Client';
 import Marklib from 'marklib';
 import Util from 'flexcss/src/main/util/Util';

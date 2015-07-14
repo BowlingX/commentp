@@ -24,6 +24,8 @@
 
 var path = require("path");
 var webpack = require("webpack"), fs = require('fs');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+
 module.exports = {
     watch: false,
     devtool: "source-map",
@@ -36,6 +38,19 @@ module.exports = {
                     fs.realpathSync(path.resolve(__dirname, "node_modules/flexcss/src/main"))
                 ],
                 loader: 'babel-loader?optional=runtime&sourceMap=inline'
+            },
+            {
+                test: /\.scss$/,
+                loader: ExtractTextPlugin.extract(
+                    // activate source maps via loader query
+                    'css?sourceMap!' +
+                    'autoprefixer?browsers=last 2 versions!' +
+                    'sass?outputStyle=expanded&sourceMap=true&sourceMapContents=true'
+                )
+            },
+            {
+                test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+                loader: 'file-loader?limit=100000'
             }
         ],
         preLoaders: [
@@ -68,6 +83,6 @@ module.exports = {
         new webpack.ResolverPlugin(
             new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin("bower.json", ["main"])
         ),
-        new webpack.optimize.UglifyJsPlugin()
+        new ExtractTextPlugin('css/[name].min.css')
     ]
 };
