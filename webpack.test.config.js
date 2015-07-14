@@ -57,7 +57,8 @@ module.exports = {
         root: [
             path.join(__dirname, 'src/main/test/js'),
             path.join(__dirname, 'src/main/test/js_helpers'),
-            path.join(__dirname, 'node_modules/flexcss/src/main')
+            path.join(__dirname, 'node_modules/flexcss/src/main'),
+            path.join(__dirname, 'src/main/js')
         ]
     },
     plugins: [
