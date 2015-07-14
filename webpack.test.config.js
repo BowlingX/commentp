@@ -54,11 +54,10 @@ module.exports = {
         }]
     },
     resolve: {
-        // add bower components and main source to resolved
-        root: [path.join(__dirname, "bower_components"),
+        root: [
             path.join(__dirname, 'src/main/test/js'),
             path.join(__dirname, 'src/main/test/js_helpers'),
-            path.join(__dirname, 'src/main/js')
+            path.join(__dirname, 'node_modules/flexcss/src/main')
         ]
     },
     plugins: [
