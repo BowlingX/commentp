@@ -19,6 +19,8 @@ test:
     - cat /dev/null | sbt test:test
     - npm test
     - npm run dist
+    - sbt coverageAggregate
+    - sbt coveralls
 
 deployment:
   hub:
