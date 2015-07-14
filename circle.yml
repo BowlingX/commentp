@@ -16,11 +16,15 @@ dependencies:
 
 test:
   override:
-    - cat /dev/null | sbt test:test
+    - cat /dev/null | sbt test
     - npm test
     - npm run dist
     - sbt coverageAggregate
     - sbt coveralls
+post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/test_out/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - cat ./reports/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
 deployment:
   hub:
