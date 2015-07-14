@@ -57,10 +57,11 @@ module.exports = {
         'app': ['App']
     },
     output: {
-        filename: '[name].min.js',
+        path: __dirname + "/src/main/webapp/static/build/",
+        filename: 'js/[name].min.js',
         libraryTarget: 'umd',
         library: 'Commentp',
-        sourceMapFilename: '[name].min.map'
+        sourceMapFilename: 'js/[name].min.map'
     },
     plugins: [
         new webpack.EnvironmentPlugin(['NODE_ENV']),

@@ -17,8 +17,8 @@ dependencies:
 test:
   override:
     - cat /dev/null | sbt test:test
-    - node_modules/gulp/bin/gulp.js test
-    - node_modules/gulp/bin/gulp.js dist
+    - npm test
+    - npm run dist
 
 deployment:
   hub:

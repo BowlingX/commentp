@@ -51,3 +51,10 @@ export FLEETCTL_TUNNEL=$COREOS_CLOUD_IP
 eval `ssh-agent`
 ssh-add ~/.ssh/id_rsa
 ```
+
+
+# NPM Tasks
+
+- `npm test` will execute all unit tests and writes junit output and coverage-report
+- `npm run tdd` will start tests in tdd mode
+- `npm run dist` will build frontend bundle
