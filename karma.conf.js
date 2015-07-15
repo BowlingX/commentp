@@ -37,10 +37,12 @@ module.exports = function (config) {
         frameworks: ['jasmine-jquery', 'jasmine'],
         browsers: ['Chrome'],
         preprocessors: {'./src/**/*.js': ['webpack']},
-        reporters: '--ci' in namedArgs ? ['progress', 'junit', 'coverage'] : ['progress', 'coverage'],
+        reporters: '--ci' in namedArgs ? ['progress', 'junit', 'coverage'] : ['progress'],
         coverageReporter: {
-            type: 'html',
-            dir: 'coverage/'
+            dir: 'reports',
+            reporters: [
+                {type: 'lcov', subdir: 'report-lcov'}
+            ]
         },
         plugins: [
             'karma-chrome-launcher',
