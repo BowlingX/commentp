@@ -22,8 +22,21 @@
  * THE SOFTWARE.
  */
 
+$includeFontello: false;
+$baseFontSize:1rem;
+$h1DesktopFontSize:1.5rem;
+
 $markingColor:#009688;
 $markingRemote:#00BCD4;
+
+@import '~flexcss/assets/base';
+@import '~flexcss/assets/lib/text';
+@import '~flexcss/assets/lib/grid';
+@import '~flexcss/assets/lib/desktop-grid';
+@import '~flexcss/assets/lib/large-grid';
+@import '~flexcss/assets/lib/panel';
+
+
 
 .marking {
   transition:background .5s ease;
@@ -37,6 +50,10 @@ $markingRemote:#00BCD4;
 
 .marking .marking .marking {
   background: darken($markingColor, 20%);
+}
+
+.marking, .marking-remote {
+  @include animate(fadeIn, .5s);
 }
 
 

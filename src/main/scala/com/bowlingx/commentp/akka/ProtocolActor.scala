@@ -45,7 +45,6 @@ class ProtocolActor(broadcastFactory: BroadcasterFactory) extends Actor with Log
     case Channel(_@channel, Protocol("mark", id, params), uuid) =>
       params.values.toList match {
         case List(startOffset: JInt, endOffset: JInt, startContainer: JString, endContainer: JString) =>
-          logger.info(channel)
 
           broadcastFactory.lookup(channel, true).asInstanceOf[AkkaBroadcaster].broadcast(
             InitiatedMarkingResponse(uuid,
