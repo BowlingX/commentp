@@ -31,7 +31,7 @@ import Util from 'flexcss/src/main/util/Util';
 
 const ATTR_COMMENTP = 'data-commentp';
 
-const TIMEOUT = 30;
+const TIMEOUT = 50;
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -40,7 +40,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const channel = node.getAttribute(ATTR_COMMENTP);
         Client.connect(channel).then((client) => {
             let timeout;
-            document.addEventListener('mouseup', () => {
+
+            // append actions
+            const appContainer = document.createElement('div');
+            appContainer.setAttribute('data-commentp-app', Util.guid());
+            appContainer.innerHTML = require('templates/selection-action.html');
+            document.body.appendChild(appContainer);
+
+            const actionContainer = appContainer.querySelector('[data-commentp-action]');
+
+            const event = 'onselectionchange' in document ? 'selectionchange' : 'mouseup';
+
+            document.addEventListener('click', (e) => {
+                const selection = document.getSelection(), range = selection.getRangeAt(0);
+                if (selection.rangeCount === 0 || range && range.getBoundingClientRect().width === 0) {
+                    if(!Util.isPartOfNode(e.target, actionContainer)) {
+                        actionContainer.classList.remove('open');
+                    }
+                }
+            });
+
+            document.addEventListener(event, () => {
                 clearTimeout(timeout);
                 timeout = setTimeout(() => {
                     const selection = document.getSelection();
@@ -50,13 +70,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (isPartOfNode) {
                             var clientRect = range.getBoundingClientRect();
                             if (clientRect.width > 0) {
-                                const marking = new Marklib.Rendering(document, 'marking', node);
-                                if (range.startContainer.nodeType === Node.TEXT_NODE
-                                    && range.endContainer.nodeType === Node.TEXT_NODE) {
-                                    const result = marking.renderWithRange(range);
-                                    client.action('mark', result);
-                                    selection.removeAllRanges();
-                                }
+                                /*const marking = new Marklib.Rendering(document, 'marking', node);
+                                 if (range.startContainer.nodeType === Node.TEXT_NODE
+                                 && range.endContainer.nodeType === Node.TEXT_NODE) {
+                                 const result = marking.renderWithRange(range);
+                                 client.action('mark', result);
+                                 selection.removeAllRanges();
+                                 }*/
+
+                                actionContainer.classList.add('open');
+                                Util.setupPositionNearby(range, actionContainer, document.body, true, true);
                             }
                         }
                     }

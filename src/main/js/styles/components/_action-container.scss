@@ -22,55 +22,12 @@
  * THE SOFTWARE.
  */
 
-$includeFontello: false;
-$baseFontSize:1rem;
-$h1DesktopFontSize:1.5rem;
+[data-commentp-action] {
+  @extend .tooltip-container;
 
-$markingColor:#009688;
-$markingRemote:#00BCD4;
+  &.open {
+    pointer-events: all;
+  }
 
-@import '~flexcss/assets/base';
-@import '~flexcss/assets/lib/text';
-@import '~flexcss/assets/lib/grid';
-@import '~flexcss/assets/lib/desktop-grid';
-@import '~flexcss/assets/lib/large-grid';
-@import '~flexcss/assets/lib/panel';
-@import '~flexcss/assets/lib/tooltip';
-@import '~flexcss/assets/lib/forms';
-@import '~flexcss/assets/lib/buttons';
-
-@import 'components/action-container';
-
-
-.marking {
-  transition:background .5s ease;
-  background: $markingColor;
-  color:#fff;
-}
-
-.marking .marking {
-  background: darken($markingColor, 10%);
-}
-
-.marking .marking .marking {
-  background: darken($markingColor, 20%);
-}
-
-.marking, .marking-remote {
-  @include animate(fadeIn, .5s);
-}
-
-
-.marking-remote {
-  transition:background .5s ease;
-  background: $markingRemote;
-  color:#fff;
-}
-
-.marking-remote .marking-remote {
-  background: darken($markingRemote, 10%);
-}
-
-.marking-remote .marking-remote .marking-remote {
-  background: darken($markingRemote, 20%);
+  padding:20px;
 }

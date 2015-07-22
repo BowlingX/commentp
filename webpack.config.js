@@ -51,6 +51,10 @@ module.exports = {
             {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
                 loader: 'file-loader?limit=100000'
+            },
+            {
+                test: /\.html/,
+                loader:'html-loader'
             }
         ],
         preLoaders: [

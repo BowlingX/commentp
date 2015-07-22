@@ -5,6 +5,8 @@ commentp
 
 CommentP is an inline commenting platform
 
+Latest master is running on http://commentp.com/
+
 # Setup docker
 
 The only supported method right now is developing with OSX and any docker supported linux Distro (like ubuntu).
