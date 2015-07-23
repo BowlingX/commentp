@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const clickEvent = 'ontouchend' in document ? 'touchend' : 'click';
             document.addEventListener(clickEvent, (e) => {
                 const selection = document.getSelection();
-                if (selection.rangeCount === 0) {
+                if (selection.rangeCount === 0 || selection.toString().trim() === '') {
                     if (!Util.isPartOfNode(e.target, actionContainer)) {
                         actionContainer.classList.remove('open');
                     }
