@@ -49,12 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const actionContainer = appContainer.querySelector('[data-commentp-action]');
 
-            const event = 'onselectionchange' in document ? 'selectionchange' : 'mouseup';
+            const event = 'onmouseup' in document ? 'mouseup' : 'selectionchange';
 
-            document.addEventListener('click', (e) => {
-                const selection = document.getSelection(), range = selection.getRangeAt(0);
-                if (selection.rangeCount === 0 || range && range.getBoundingClientRect().width === 0) {
-                    if(!Util.isPartOfNode(e.target, actionContainer)) {
+            const clickEvent = 'ontouchend' in document ? 'touchend' : 'click';
+            document.addEventListener(clickEvent, (e) => {
+                const selection = document.getSelection();
+                if (selection.rangeCount === 0) {
+                    if (!Util.isPartOfNode(e.target, actionContainer)) {
                         actionContainer.classList.remove('open');
                     }
                 }
@@ -80,8 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                 actionContainer.classList.add('open');
                                 Util.setupPositionNearby(range, actionContainer, document.body, true, true);
+                            } else {
+                                actionContainer.classList.remove('open');
                             }
                         }
+                    } else {
+                        actionContainer.classList.remove('open');
                     }
                 }, TIMEOUT);
             });
