@@ -28,6 +28,7 @@ require('styles/main.scss');
 import {Client, EVENT_MESSAGE} from 'Client';
 import Marklib from 'marklib';
 import Util from 'flexcss/src/main/util/Util';
+import Settings from 'flexcss/src/main/util/Settings';
 
 const ATTR_COMMENTP = 'data-commentp';
 
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const actionContainer = appContainer.querySelector('[data-commentp-action]');
 
-            const event = 'onmouseup' in document ? 'mouseup' : 'selectionchange';
+            const event = Settings.isTouchDevice()? 'selectionchange' : 'mouseup';
 
             const clickEvent = 'ontouchend' in document ? 'touchend' : 'click';
             document.addEventListener(clickEvent, (e) => {
