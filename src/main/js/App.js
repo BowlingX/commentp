@@ -32,16 +32,12 @@ import Settings from 'flexcss/src/main/util/Settings';
 
 const ATTR_COMMENTP = 'data-commentp';
 
-const TIMEOUT = 50;
-
 document.addEventListener('DOMContentLoaded', () => {
 
     const node = document.querySelector(`[${ATTR_COMMENTP}]`);
     if (node) {
         const channel = node.getAttribute(ATTR_COMMENTP);
         Client.connect(channel).then((client) => {
-            let timeout;
-
             // append actions
             const appContainer = document.createElement('div');
             appContainer.setAttribute('data-commentp-app', Util.guid());
@@ -50,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const actionContainer = appContainer.querySelector('[data-commentp-action]');
 
-            const event = Settings.isTouchDevice()? 'selectionchange' : 'mouseup';
+            const event = Settings.isTouchDevice() ? 'selectionchange' : 'mouseup';
 
             const clickEvent = 'ontouchend' in document ? 'touchend' : 'click';
             document.addEventListener(clickEvent, (e) => {
@@ -60,33 +56,30 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             document.addEventListener(event, () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    const selection = document.getSelection();
-                    if (selection.rangeCount > 0) {
-                        const range = selection.getRangeAt(0),
-                            isPartOfNode = Util.isPartOfNode(range.commonAncestorContainer, node);
-                        if (isPartOfNode) {
-                            var clientRect = range.getBoundingClientRect();
-                            if (clientRect.width > 0) {
-                                /*const marking = new Marklib.Rendering(document, 'marking', node);
-                                 if (range.startContainer.nodeType === Node.TEXT_NODE
-                                 && range.endContainer.nodeType === Node.TEXT_NODE) {
-                                 const result = marking.renderWithRange(range);
-                                 client.action('mark', result);
-                                 selection.removeAllRanges();
-                                 }*/
+                const selection = document.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0),
+                        isPartOfNode = Util.isPartOfNode(range.commonAncestorContainer, node);
+                    if (isPartOfNode) {
+                        var clientRect = range.getBoundingClientRect();
+                        if (clientRect.width > 0) {
+                            /*const marking = new Marklib.Rendering(document, 'marking', node);
+                             if (range.startContainer.nodeType === Node.TEXT_NODE
+                             && range.endContainer.nodeType === Node.TEXT_NODE) {
+                             const result = marking.renderWithRange(range);
+                             client.action('mark', result);
+                             selection.removeAllRanges();
+                             }*/
 
-                                actionContainer.classList.add('open');
-                                Util.setupPositionNearby(range, actionContainer, document.body, true, true);
-                            } else {
-                                actionContainer.classList.remove('open');
-                            }
+                            actionContainer.classList.add('open');
+                            Util.setupPositionNearby(range, actionContainer, document.body, true, true);
+                        } else {
+                            actionContainer.classList.remove('open');
                         }
-                    } else {
-                        actionContainer.classList.remove('open');
                     }
-                }, TIMEOUT);
+                } else {
+                    actionContainer.classList.remove('open');
+                }
             });
 
             client.on(EVENT_MESSAGE, (msg) => {
