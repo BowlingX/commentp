@@ -50,8 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const clickEvent = 'ontouchend' in document ? 'touchend' : 'click';
 
-            document.addEventListener(event, (e) => {
-                console.log(e);
+            document.addEventListener(event, () => {
                 const selection = document.getSelection();
                 if (selection.rangeCount > 0) {
                     const range = selection.getRangeAt(0),
