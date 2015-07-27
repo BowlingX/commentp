@@ -49,11 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const event = Settings.isTouchDevice() ? 'selectionchange' : 'mouseup';
 
             const clickEvent = 'ontouchend' in document ? 'touchend' : 'click';
-            document.addEventListener(clickEvent, (e) => {
-                if (!Util.isPartOfNode(e.target, actionContainer)) {
-                    actionContainer.classList.remove('open');
-                }
-            });
 
             document.addEventListener(event, () => {
                 const selection = document.getSelection();
@@ -73,6 +68,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             actionContainer.classList.add('open');
                             Util.setupPositionNearby(range, actionContainer, document.body, true, true);
+                            Util.addEventOnce(clickEvent, document, (e) => {
+                                if (!Util.isPartOfNode(e.target, actionContainer)) {
+                                    actionContainer.classList.remove('open');
+                                }
+                            })
                         } else {
                             actionContainer.classList.remove('open');
                         }
