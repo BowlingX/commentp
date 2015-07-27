@@ -73,8 +73,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 // skip frame because we bind an event inside an event
                                 setTimeout(() => {
                                     if (actionContainer.classList.contains('open')) {
-                                        Util.addEventOnce(clickEvent, document, () => {
-                                            actionContainer.classList.remove('open');
+                                        Util.addEventOnce(clickEvent, document, (e, self) => {
+                                            if (!Util.isPartOfNode(e.target, actionContainer)) {
+                                                actionContainer.classList.remove('open');
+                                            } else {
+                                                Util.addEventOnce(clickEvent, document, self);
+                                            }
                                         });
                                     }
                                 }, 0);
