@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                 }
-                console.log("tt");
             });
 
             client.on(EVENT_MESSAGE, (msg) => {
