@@ -50,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const clickEvent = 'ontouchend' in document ? 'touchend' : 'click';
 
-            document.addEventListener(event, () => {
+            document.addEventListener(event, (e) => {
+                console.log(e);
                 const selection = document.getSelection();
                 if (selection.rangeCount > 0) {
                     const range = selection.getRangeAt(0),
@@ -68,18 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             actionContainer.classList.add('open');
                             Util.setupPositionNearby(range, actionContainer, document.body, true, true);
-                            Util.addEventOnce(clickEvent, document, (e) => {
-                                if (!Util.isPartOfNode(e.target, actionContainer)) {
-                                    actionContainer.classList.remove('open');
-                                }
-                            })
-                        } else {
-                            actionContainer.classList.remove('open');
+                            if (actionContainer.classList.contains('open')) {
+                                // skip frame because we bind an event inside an event
+                                setTimeout(() => {
+                                    if (actionContainer.classList.contains('open')) {
+                                        Util.addEventOnce(clickEvent, document, () => {
+                                            actionContainer.classList.remove('open');
+                                        });
+                                    }
+                                }, 0);
+                            }
                         }
                     }
-                } else {
-                    actionContainer.classList.remove('open');
                 }
+                console.log("tt");
             });
 
             client.on(EVENT_MESSAGE, (msg) => {
