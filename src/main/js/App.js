@@ -27,8 +27,7 @@ require('styles/main.scss');
 
 import {Client, EVENT_MESSAGE} from 'Client';
 import Marklib from 'marklib';
-import Util from 'flexcss/src/main/util/Util';
-import Settings from 'flexcss/src/main/util/Settings';
+import Selector from 'Selector';
 
 const ATTR_COMMENTP = 'data-commentp';
 
@@ -38,54 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (node) {
         const channel = node.getAttribute(ATTR_COMMENTP);
         Client.connect(channel).then((client) => {
-            // append actions
-            const appContainer = document.createElement('div');
-            appContainer.setAttribute('data-commentp-app', Util.guid());
-            appContainer.innerHTML = require('templates/selection-action.html');
-            document.body.appendChild(appContainer);
 
-            const actionContainer = appContainer.querySelector('[data-commentp-action]');
+            const selectorApp = new Selector(node, global.document);
 
-            const event = Settings.isTouchDevice() ? 'selectionchange' : 'mouseup';
-
-            const clickEvent = 'ontouchend' in document ? 'touchend' : 'click';
-
-            document.addEventListener(event, () => {
-                const selection = document.getSelection();
-                if (selection.rangeCount > 0) {
-                    const range = selection.getRangeAt(0),
-                        isPartOfNode = Util.isPartOfNode(range.commonAncestorContainer, node);
-                    if (isPartOfNode) {
-                        var clientRect = range.getBoundingClientRect();
-                        if (clientRect.width > 0) {
-                            /*const marking = new Marklib.Rendering(document, 'marking', node);
-                             if (range.startContainer.nodeType === Node.TEXT_NODE
-                             && range.endContainer.nodeType === Node.TEXT_NODE) {
-                             const result = marking.renderWithRange(range);
-                             client.action('mark', result);
-                             selection.removeAllRanges();
-                             }*/
-
-                            actionContainer.classList.add('open');
-                            Util.setupPositionNearby(range, actionContainer, document.body, true, true);
-                            if (actionContainer.classList.contains('open')) {
-                                // skip frame because we bind an event inside an event
-                                setTimeout(() => {
-                                    if (actionContainer.classList.contains('open')) {
-                                        Util.addEventOnce(clickEvent, document, (thisEvent, self) => {
-                                            if (!Util.isPartOfNode(thisEvent.target, actionContainer)) {
-                                                actionContainer.classList.remove('open');
-                                            } else {
-                                                Util.addEventOnce(clickEvent, document, self);
-                                            }
-                                        });
-                                    }
-                                }, 0);
-                            }
-                        }
-                    }
-                }
-            });
 
             client.on(EVENT_MESSAGE, (msg) => {
                 // FIXME: Create a queue :)

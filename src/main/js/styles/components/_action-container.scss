@@ -27,6 +27,7 @@
 
   &.open {
     pointer-events: all;
+    transition:all .5s ease;
   }
 
   padding:20px;

@@ -188,7 +188,7 @@ trait AtmosphereServlet extends HttpServlet with Logging {
   def channel(pattern: String)(block: AtmosphereMatch): Unit = {
     get(pattern) {
       a =>
-        a.routeParams.get(CHANNEL_PARAMETER).headOption.flatMap(_.headOption).foreach { channel =>
+        a.routeParams.get(CHANNEL_PARAMETER).flatMap(_.headOption).foreach { channel =>
           log(channel)
           val m = createMeteor(channel, a, block)
           m suspend -1

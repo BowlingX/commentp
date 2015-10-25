@@ -66,11 +66,7 @@ module.exports = {
         ]
     },
     resolve: {
-        // add bower components and main source to resolved
-        root: [
-            path.join(__dirname, 'src/main/js'),
-            path.join(__dirname, 'node_modules/flexcss/src/main')
-        ]
+        modulesDirectories: ['src/main/js', 'src/main', 'node_modules']
     },
     entry: {
         'app': ['App']

@@ -26,7 +26,7 @@
 export const EVENT_MESSAGE = 'commentp.message';
 
 import ReconnectingWebSocket from 'ReconnectingWebSocket';
-import eventEmitter from 'event-emitter';
+import EventEmitter from 'wolfy87-eventemitter';
 import {ArrayObserver} from 'observe-js';
 
 /**
@@ -43,12 +43,13 @@ const ERROR_FRAME = '!';
 /**
  * Basic WebSocket Client that confirms to the `commentp` Protocol
  */
-export class Client {
+export class Client extends EventEmitter{
     /**
      * @param {string} channelId
      * @param {object} options
      */
     constructor(channelId, options) {
+        super();
         this.channelId = channelId;
         this.currentRequestId = 0;
         this.actionResponses = [];
@@ -62,9 +63,6 @@ export class Client {
         };
 
         Object.assign(this.options, options);
-
-        // setup events
-        eventEmitter(this);
     }
 
     /**
