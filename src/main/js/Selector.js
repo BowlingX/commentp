@@ -93,7 +93,7 @@ export default class Selector extends EventEmitter {
                                 }, 0);
                             });
                         }
-                    }, 0)
+                    }, 0);
                 }
             }
         });
