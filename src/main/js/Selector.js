@@ -27,6 +27,11 @@
 import Util from 'flexcss/src/main/util/Util';
 import Settings from 'flexcss/src/main/util/Settings';
 import EventEmitter from 'wolfy87-eventemitter';
+import Marklib from 'marklib';
+
+const EVENT_CLOSE = 'close';
+
+const CLASS_OPEN = 'open';
 
 export default class Selector extends EventEmitter {
 
@@ -38,6 +43,7 @@ export default class Selector extends EventEmitter {
         super();
         this.node = node;
         this.document = document;
+        this.currentRendering = null;
         this.init(node);
     }
 
@@ -49,6 +55,16 @@ export default class Selector extends EventEmitter {
         return Util.isPartOfNode(range.commonAncestorContainer, this.node);
     }
 
+    /**
+     * Resets a temporary rendering
+     */
+    resetRendering() {
+        if (this.currentRendering) {
+            this.currentRendering.destroy();
+            delete this.currentRendering;
+        }
+    }
+
     init() {
         // append actions
         const appContainer = this.document.createElement('div');
@@ -57,43 +73,64 @@ export default class Selector extends EventEmitter {
         this.document.body.appendChild(appContainer);
 
         const actionContainer = appContainer.querySelector('[data-commentp-action]');
+        const input = actionContainer.querySelector('[data-comment-input]'),
+            form = actionContainer.getElementsByTagName('form')[0];
 
         const event = Settings.isTouchDevice() ? 'selectionchange' : 'mouseup';
 
         const clickEvent = 'ontouchend' in this.document ? 'touchend' : 'click';
 
-        this.document.addEventListener(event, () => {
+        const handleClose = (container, e) => {
+            if (container.classList.contains('open') && !Util.isPartOfNode(e.target, container)) {
+                container.classList.remove(CLASS_OPEN);
+                this.emit(EVENT_CLOSE, container, e);
+                this.resetRendering();
+                form.reset();
+            }
+        };
+
+        input.addEventListener('focus', () => {
+            const selection = this.document.getSelection();
+            if (!selection.isCollapsed && this.isValidRange(selection.getRangeAt(0))) {
+                this.resetRendering();
+                const renderer = new Marklib.Rendering(this.document);
+                renderer.renderWithRange(selection.getRangeAt(0));
+                this.document.getSelection().removeAllRanges();
+                this.currentRendering = renderer;
+            }
+        });
+
+        this.document.addEventListener(event, (e) => {
             const selection = this.document.getSelection();
             if (selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0),
                     isPartOfNode = this.isValidRange(range);
                 if (isPartOfNode && !range.collapsed) {
                     var clientRect = range.getBoundingClientRect();
-                    actionContainer.classList.add('open');
                     Util.setupPositionNearby(clientRect, actionContainer, this.document.body, true, true);
-                    setTimeout(() => {
-                        if (!this.document.getSelection().isCollapsed) {
-                            Util.addEventOnce(clickEvent, this.document, (thisEvent, self) => {
-                                // skip frame to detect if a selection has been canceled
-                                setTimeout(() => {
-                                    const thisSelection = this.document.getSelection(),
-                                        isCollapsed = thisSelection.isCollapsed;
-                                    const notValid = isCollapsed ||
-                                        (!isCollapsed && !this.isValidRange(thisSelection.getRangeAt(0)));
-                                    if (notValid && !Util.isPartOfNode(thisEvent.target, actionContainer)) {
-                                        Util.addEventOnce(Settings.getTransitionEvent(), actionContainer, () => {
-                                            if (this.document.getSelection().isCollapsed) {
-                                                actionContainer.setAttribute('style', '');
-                                            }
-                                        });
-                                        actionContainer.classList.remove('open');
-                                    } else {
-                                        Util.addEventOnce(clickEvent, this.document, self);
-                                    }
-                                }, 0);
-                            });
-                        }
-                    }, 0);
+                    if (!actionContainer.classList.contains(CLASS_OPEN)) {
+                        setTimeout(() => {
+                            actionContainer.classList.add(CLASS_OPEN);
+                            if (!this.document.getSelection().isCollapsed) {
+                                Util.addEventOnce(clickEvent, this.document, (thisEvent, self) => {
+                                    // skip frame to detect if a selection has been canceled
+                                    setTimeout(() => {
+                                        const thisSelection = this.document.getSelection(),
+                                            isCollapsed = thisSelection.isCollapsed;
+                                        const notValid = isCollapsed ||
+                                            (!isCollapsed && !this.isValidRange(thisSelection.getRangeAt(0)));
+                                        if (notValid) {
+                                            handleClose(actionContainer, thisEvent);
+                                        } else {
+                                            Util.addEventOnce(clickEvent, this.document, self);
+                                        }
+                                    }, 0);
+                                });
+                            }
+                        }, 0);
+                    }
+                } else {
+                    handleClose(actionContainer, e);
                 }
             }
         });

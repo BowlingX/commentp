@@ -46,6 +46,7 @@ $markingRemote:#00BCD4;
   transition:background .5s ease;
   background: $markingColor;
   color:#fff;
+  cursor:pointer;
 }
 
 .marking .marking {
@@ -58,6 +59,11 @@ $markingRemote:#00BCD4;
 
 .marking, .marking-remote {
   @include animate(fadeIn, .5s);
+}
+
+.marking.marklib--hover .marking,
+.marking.marklib--hover {
+  background: lighten($markingColor, 10%) !important;
 }
 
 
