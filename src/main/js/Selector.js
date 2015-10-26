@@ -89,16 +89,7 @@ export default class Selector extends EventEmitter {
             }
         };
 
-        input.addEventListener('focus', () => {
-            const selection = this.document.getSelection();
-            if (!selection.isCollapsed && this.isValidRange(selection.getRangeAt(0))) {
-                this.resetRendering();
-                const renderer = new Marklib.Rendering(this.document);
-                renderer.renderWithRange(selection.getRangeAt(0));
-                this.document.getSelection().removeAllRanges();
-                this.currentRendering = renderer;
-            }
-        });
+        let currentFocusEvent;
 
         this.document.addEventListener(event, (e) => {
             const selection = this.document.getSelection();
@@ -108,8 +99,22 @@ export default class Selector extends EventEmitter {
                 if (isPartOfNode && !range.collapsed) {
                     var clientRect = range.getBoundingClientRect();
                     Util.setupPositionNearby(clientRect, actionContainer, this.document.body, true, true);
+                    if (currentFocusEvent) {
+                        input.removeEventListener('focus', currentFocusEvent);
+                    }
+                    currentFocusEvent = Util.addEventOnce('focus', input, () => {
+                        if (this.isValidRange(range)) {
+                            this.resetRendering();
+                            const renderer = new Marklib.Rendering(this.document);
+                            renderer.renderWithRange(range);
+                            this.document.getSelection().removeAllRanges();
+                            this.currentRendering = renderer;
+                        }
+                    });
+
                     if (!actionContainer.classList.contains(CLASS_OPEN)) {
                         setTimeout(() => {
+
                             actionContainer.classList.add(CLASS_OPEN);
                             if (!this.document.getSelection().isCollapsed) {
                                 Util.addEventOnce(clickEvent, this.document, (thisEvent, self) => {
