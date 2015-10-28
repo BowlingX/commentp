@@ -80,62 +80,58 @@ export default class Selector extends EventEmitter {
 
         const clickEvent = 'ontouchend' in this.document ? 'touchend' : 'click';
 
-        const handleClose = (container, e) => {
-            if (container.classList.contains('open') && !Util.isPartOfNode(e.target, container)) {
-                container.classList.remove(CLASS_OPEN);
-                this.emit(EVENT_CLOSE, container, e);
-                this.resetRendering();
-                form.reset();
-            }
-        };
 
         let currentFocusEvent;
 
-        this.document.addEventListener(event, (e) => {
-            const selection = this.document.getSelection();
-            if (selection.rangeCount > 0) {
+        var self = this;
+
+        this.document.addEventListener(event, () => {
+
+            const selection = self.document.getSelection();
+
+            if (!selection.isCollapsed) {
                 const range = selection.getRangeAt(0),
-                    isPartOfNode = this.isValidRange(range);
-                if (isPartOfNode && !range.collapsed) {
+                    isPartOfNode = self.isValidRange(range);
+                if (isPartOfNode) {
                     var clientRect = range.getBoundingClientRect();
-                    Util.setupPositionNearby(clientRect, actionContainer, this.document.body, true, true);
+
+                    Util.setupPositionNearby(clientRect, actionContainer, self.document.body, true, true);
+
                     if (currentFocusEvent) {
                         input.removeEventListener('focus', currentFocusEvent);
                     }
+
                     currentFocusEvent = Util.addEventOnce('focus', input, () => {
-                        if (this.isValidRange(range)) {
-                            this.resetRendering();
-                            const renderer = new Marklib.Rendering(this.document);
+                        if (self.isValidRange(range)) {
+                            self.resetRendering();
+                            const renderer = new Marklib.Rendering(self.document);
                             renderer.renderWithRange(range);
-                            this.document.getSelection().removeAllRanges();
-                            this.currentRendering = renderer;
+                            self.document.getSelection().removeAllRanges();
+                            self.currentRendering = renderer;
                         }
                     });
 
                     if (!actionContainer.classList.contains(CLASS_OPEN)) {
                         setTimeout(() => {
-
                             actionContainer.classList.add(CLASS_OPEN);
-                            if (!this.document.getSelection().isCollapsed) {
-                                Util.addEventOnce(clickEvent, this.document, (thisEvent, self) => {
-                                    // skip frame to detect if a selection has been canceled
-                                    setTimeout(() => {
-                                        const thisSelection = this.document.getSelection(),
-                                            isCollapsed = thisSelection.isCollapsed;
-                                        const notValid = isCollapsed ||
-                                            (!isCollapsed && !this.isValidRange(thisSelection.getRangeAt(0)));
-                                        if (notValid) {
-                                            handleClose(actionContainer, thisEvent);
-                                        } else {
-                                            Util.addEventOnce(clickEvent, this.document, self);
-                                        }
-                                    }, 0);
-                                });
-                            }
+
+                            Util.addEventOnce(clickEvent, self.document, (e, selfFunction) => {
+                                setTimeout(() => {
+                                    if (self.document.getSelection().isCollapsed && !Util.isPartOfNode(e.target, actionContainer)) {
+                                        this.emit(EVENT_CLOSE, actionContainer, e);
+                                        form.reset();
+                                        this.resetRendering();
+                                        actionContainer.classList.remove(CLASS_OPEN);
+                                    } else {
+                                        Util.addEventOnce(clickEvent, self.document, selfFunction);
+                                    }
+                                }, 0);
+                            });
+
                         }, 0);
                     }
                 } else {
-                    handleClose(actionContainer, e);
+                    actionContainer.classList.remove(CLASS_OPEN);
                 }
             }
         });
