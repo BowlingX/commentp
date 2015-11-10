@@ -25,10 +25,10 @@
 var path = require("path");
 var webpack = require("webpack"), fs = require('fs');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-
+var isProduction = "production" === process.env.NODE_ENV;
 module.exports = {
     watch: false,
-    devtool: "source-map",
+    devtool: isProduction ? 'source-map' : 'eval',
     module: {
         loaders: [
             {

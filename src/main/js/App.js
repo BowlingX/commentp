@@ -30,7 +30,6 @@ import Marklib from 'marklib';
 import Selector from 'Selector';
 
 const ATTR_COMMENTP = 'data-commentp';
-const DOM_COMPLETE = 'complete';
 
 function init() {
     const node = document.querySelector(`[${ATTR_COMMENTP}]`);
@@ -47,7 +46,7 @@ function init() {
     }
 }
 
-if (global.document.readyState === DOM_COMPLETE) {
+if (global.document.readyState !== 'loading') {
     init();
 } else {
     document.addEventListener('DOMContentLoaded', () => {
