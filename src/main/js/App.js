@@ -30,17 +30,14 @@ import Marklib from 'marklib';
 import Selector from 'Selector';
 
 const ATTR_COMMENTP = 'data-commentp';
+const DOM_COMPLETE = 'complete';
 
-document.addEventListener('DOMContentLoaded', () => {
-
+function init() {
     const node = document.querySelector(`[${ATTR_COMMENTP}]`);
     if (node) {
         const channel = node.getAttribute(ATTR_COMMENTP);
         Client.connect(channel).then((client) => {
-
             const selectorApp = new Selector(node, global.document);
-
-
             client.on(EVENT_MESSAGE, (msg) => {
                 // FIXME: Create a queue :)
                 const renderer = new Marklib.Rendering(document, 'marking-remote', node);
@@ -48,8 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+}
 
-
-});
+if (global.document.readyState === DOM_COMPLETE) {
+    init();
+} else {
+    document.addEventListener('DOMContentLoaded', () => {
+        init();
+    });
+}
 
 export default Client;
