@@ -25,23 +25,23 @@
 .commentp-marking {
   transition:background .5s ease;
   background: $markingColor;
-  color:#fff;
+  color:#333;
   cursor:pointer;
 }
 
 .commentp-marking .commentp-marking {
-  background: darken($markingColor, 10%);
+  background: darken($markingColor, 15%);
 }
 
 .commentp-marking .commentp-marking .commentp-marking {
-  background: darken($markingColor, 20%);
+  background: darken($markingColor, 35%);
 }
 
-.commentp-marking, .commentp-marking-remote {
+.commentp-marking {
   @include animate(fadeIn, .5s);
 }
 
 .commentp-marking.marklib--hover .commentp-marking,
 .commentp-marking.marklib--hover {
-  background: lighten($markingColor, 10%) !important;
+  background: $markingHoverColor !important;
 }

@@ -37,12 +37,14 @@ function init() {
             const selectorApp = new Selector(node, global.document);
 
             selectorApp.on(EVENT_COMMENT, (r) => {
-
+                console.log(r);
+                client.action('mark', r.selection.result.serialize());
             });
 
             client.on(EVENT_MESSAGE, (msg) => {
-                // FIXME: Create a queue :)
-                const renderer = new Marklib.Rendering(document, 'marking-remote', node);
+                const renderer = new Marklib.Rendering(self.document, {
+                    className: 'commentp-marking'
+                });
                 renderer.renderWithResult(msg);
             });
         });

@@ -23,22 +23,22 @@
  */
 
 $includeFontello: false;
-$executeDefaultMixins:false;
-$baseFontSize:1rem;
-$h1DesktopFontSize:1.5rem;
+$executeDefaultMixins: false;
+$baseFontSize: 1rem;
+$h1DesktopFontSize: 1.5rem;
 
-$markingColor:#009688;
-$markingRemote:#00BCD4;
-
+$markingColor: #fff6a6;
+$markingHoverColor: #B2EBF2;
+$markingRemote: #00BCD4;
 
 // FlexCss
 @import "~flexcss/assets/settings";
 @import "~flexcss/assets/lib/mixins";
 
 :local(.commentp) {
-  position:absolute;
-  top:0;
-  width:100%;
+  position: absolute;
+  top: 0;
+  width: 100%;
 
   @import 'reset.scss';
 
