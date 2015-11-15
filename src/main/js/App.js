@@ -23,11 +23,9 @@
  */
 'use strict';
 
-require('styles/main.scss');
-
 import {Client, EVENT_MESSAGE} from 'Client';
 import Marklib from 'marklib';
-import Selector from 'Selector';
+import {default as Selector, EVENT_COMMENT} from 'Selector';
 
 const ATTR_COMMENTP = 'data-commentp';
 
@@ -37,6 +35,11 @@ function init() {
         const channel = node.getAttribute(ATTR_COMMENTP);
         Client.connect(channel).then((client) => {
             const selectorApp = new Selector(node, global.document);
+
+            selectorApp.on('comment', (r) => {
+
+            });
+
             client.on(EVENT_MESSAGE, (msg) => {
                 // FIXME: Create a queue :)
                 const renderer = new Marklib.Rendering(document, 'marking-remote', node);

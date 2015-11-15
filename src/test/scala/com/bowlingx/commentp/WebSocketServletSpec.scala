@@ -29,10 +29,8 @@ import com.bowlingx.commentp.akka.AkkaBroadcaster
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.scalatra.servlet.ScalatraListener
 import org.scalatra.test.specs2._
-import org.specs2.time.NoTimeConversions
 
-
-class WebSocketServletSpec extends MutableScalatraSpec with NoTimeConversions {
+class WebSocketServletSpec extends MutableScalatraSpec {
 
   override lazy val servletContextHandler = {
     val handler = new ServletContextHandler(ServletContextHandler.SESSIONS)

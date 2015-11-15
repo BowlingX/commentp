@@ -22,20 +22,26 @@
  * THE SOFTWARE.
  */
 
-.commentp-error-tooltip, .commentp-tooltip {
-  @include tooltip-container();
+.commentp-marking {
+  transition:background .5s ease;
+  background: $markingColor;
+  color:#fff;
+  cursor:pointer;
 }
 
-.commentp-tooltip {
-  &.open {
-    pointer-events: all;
-    transition:all .5s ease;
-  }
-
-  padding:20px;
+.commentp-marking .commentp-marking {
+  background: darken($markingColor, 10%);
 }
 
-[data-commentp] {
-  -webkit-touch-callout: none;
+.commentp-marking .commentp-marking .commentp-marking {
+  background: darken($markingColor, 20%);
 }
 
+.commentp-marking, .commentp-marking-remote {
+  @include animate(fadeIn, .5s);
+}
+
+.commentp-marking.marklib--hover .commentp-marking,
+.commentp-marking.marklib--hover {
+  background: lighten($markingColor, 10%) !important;
+}

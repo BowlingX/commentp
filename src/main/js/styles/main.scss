@@ -23,60 +23,47 @@
  */
 
 $includeFontello: false;
+$executeDefaultMixins:false;
 $baseFontSize:1rem;
 $h1DesktopFontSize:1.5rem;
 
 $markingColor:#009688;
 $markingRemote:#00BCD4;
 
-@import '~flexcss/assets/base';
-@import '~flexcss/assets/lib/text';
-@import '~flexcss/assets/lib/grid';
-@import '~flexcss/assets/lib/desktop-grid';
-@import '~flexcss/assets/lib/large-grid';
-@import '~flexcss/assets/lib/panel';
-@import '~flexcss/assets/lib/tooltip';
-@import '~flexcss/assets/lib/forms';
-@import '~flexcss/assets/lib/buttons';
 
-@import 'components/action-container';
+// FlexCss
+@import "~flexcss/assets/settings";
+@import "~flexcss/assets/lib/mixins";
 
+:local(.commentp) {
 
-.marking {
-  transition:background .5s ease;
-  background: $markingColor;
-  color:#fff;
-  cursor:pointer;
+  @import 'reset.scss';
+
+  font-family: sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+
+  font-family: $baseFontFamily;
+  font-size: $baseFontSize;
+  box-sizing: border-box;
+  color: $baseColor;
+  line-height: $baseLineHeight;
+
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+  @include font-smoothing();
+
+  @import "~flexcss/assets/lib/animate";
+  @import '~flexcss/assets/lib/tooltip';
+  @import '~flexcss/assets/lib/buttons';
+
+  @import '~flexcss/assets/lib/forms';
+
+  @import 'components/action-container';
+  @import 'components/button';
+
 }
 
-.marking .marking {
-  background: darken($markingColor, 10%);
-}
-
-.marking .marking .marking {
-  background: darken($markingColor, 20%);
-}
-
-.marking, .marking-remote {
-  @include animate(fadeIn, .5s);
-}
-
-.marking.marklib--hover .marking,
-.marking.marklib--hover {
-  background: lighten($markingColor, 10%) !important;
-}
-
-
-.marking-remote {
-  transition:background .5s ease;
-  background: $markingRemote;
-  color:#fff;
-}
-
-.marking-remote .marking-remote {
-  background: darken($markingRemote, 10%);
-}
-
-.marking-remote .marking-remote .marking-remote {
-  background: darken($markingRemote, 20%);
-}
+@import 'components/marking';

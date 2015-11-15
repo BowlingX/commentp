@@ -113,8 +113,8 @@ export class Client extends EventEmitter{
      * @returns {Promise}
      */
     action(name, params) {
-        const self = this, currentId = ++this.currentRequestId,
-            action = JSON.stringify({
+        const self = this, currentId = ++this.currentRequestId;
+           const thisAction = JSON.stringify({
                 action: name,
                 id: currentId,
                 params: params
@@ -149,7 +149,7 @@ export class Client extends EventEmitter{
             }, this.options.requestTimeout);
         });
 
-        this._connection.send(action);
+        this._connection.send(thisAction);
         return promise;
     }
 

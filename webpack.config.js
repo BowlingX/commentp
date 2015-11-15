@@ -37,16 +37,16 @@ module.exports = {
                     path.resolve(__dirname, "src/main/js"),
                     fs.realpathSync(path.resolve(__dirname, "node_modules/flexcss/src/main"))
                 ],
-                loader: 'babel-loader?optional=runtime&sourceMap=inline'
+                loader: 'babel-loader'
             },
             {
                 test: /\.scss$/,
-                loader: ExtractTextPlugin.extract(
+                loader:
                     // activate source maps via loader query
-                    'css?sourceMap!' +
+                    'style-loader!css?sourceMap!' +
                     'autoprefixer?browsers=last 2 versions!' +
                     'sass?outputStyle=expanded&sourceMap=true&sourceMapContents=true'
-                )
+
             },
             {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
@@ -82,7 +82,6 @@ module.exports = {
         new webpack.EnvironmentPlugin(['NODE_ENV']),
         new webpack.ResolverPlugin(
             new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin("bower.json", ["main"])
-        ),
-        new ExtractTextPlugin('css/[name].min.css')
+        )
     ]
 };

@@ -24,14 +24,17 @@
 
 'use strict';
 
-import Util from 'flexcss/src/main/util/Util';
-import Settings from 'flexcss/src/main/util/Settings';
+import {Util, Settings, Form} from 'flexcss';
 import EventEmitter from 'wolfy87-eventemitter';
 import Marklib from 'marklib';
 
-const EVENT_CLOSE = 'close';
+export const EVENT_CLOSE = 'close';
+
+export const EVENT_COMMENT = 'comment';
 
 const CLASS_OPEN = 'open';
+
+const classNames = require('styles/main.scss');
 
 export default class Selector extends EventEmitter {
 
@@ -71,15 +74,30 @@ export default class Selector extends EventEmitter {
         appContainer.setAttribute('data-commentp-app', Util.guid());
         appContainer.innerHTML = require('templates/selection-action.html');
         this.document.body.appendChild(appContainer);
-
+        appContainer.classList.add(classNames.commentp);
         const actionContainer = appContainer.querySelector('[data-commentp-action]');
         const input = actionContainer.querySelector('[data-comment-input]'),
             form = actionContainer.getElementsByTagName('form')[0];
 
+        const formInstance = new Form(form, {
+            tooltipContainer: appContainer,
+            tooltipOptions: {
+                containerClass:'commentp-error-tooltip',
+                collisionContainer: this.document.documentElement
+            }
+        });
+
+        form.addEventListener('flexcss.form.submit', (e) => {
+            e.preventDefault();
+            this.emit(EVENT_COMMENT, {selection: this.currentRendering, data:formInstance.serialize()});
+            actionContainer.classList.remove(CLASS_OPEN);
+            this.currentRendering = null;
+            form.reset();
+        });
+
         const event = Settings.isTouchDevice() ? 'selectionchange' : 'mouseup';
 
         const clickEvent = 'ontouchend' in this.document ? 'touchend' : 'click';
-
 
         let currentFocusEvent;
 
@@ -95,7 +113,8 @@ export default class Selector extends EventEmitter {
                 if (isPartOfNode) {
                     var clientRect = range.getBoundingClientRect();
 
-                    Util.setupPositionNearby(clientRect, actionContainer, self.document.body, true, true);
+                    Util.setupPositionNearby(clientRect, actionContainer,
+                        self.document.documentElement, true, true);
 
                     if (currentFocusEvent) {
                         input.removeEventListener('focus', currentFocusEvent);
@@ -104,7 +123,9 @@ export default class Selector extends EventEmitter {
                     currentFocusEvent = Util.addEventOnce('focus', input, () => {
                         if (self.isValidRange(range)) {
                             self.resetRendering();
-                            const renderer = new Marklib.Rendering(self.document);
+                            const renderer = new Marklib.Rendering(self.document, {
+                                className: 'commentp-marking'
+                            });
                             renderer.renderWithRange(range);
                             self.document.getSelection().removeAllRanges();
                             self.currentRendering = renderer;
@@ -117,7 +138,12 @@ export default class Selector extends EventEmitter {
 
                             Util.addEventOnce(clickEvent, self.document, (e, selfFunction) => {
                                 setTimeout(() => {
-                                    if (self.document.getSelection().isCollapsed && !Util.isPartOfNode(e.target, actionContainer)) {
+                                    if (self.document.getSelection().isCollapsed &&
+                                        !Util.isPartOfNode(e.target, actionContainer)) {
+                                        // if dialog is closed already, do nothing
+                                        if(!actionContainer.classList.contains(CLASS_OPEN)) {
+                                            return;
+                                        }
                                         this.emit(EVENT_CLOSE, actionContainer, e);
                                         form.reset();
                                         this.resetRendering();
