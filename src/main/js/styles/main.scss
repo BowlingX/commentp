@@ -36,6 +36,9 @@ $markingRemote:#00BCD4;
 @import "~flexcss/assets/lib/mixins";
 
 :local(.commentp) {
+  position:absolute;
+  top:0;
+  width:100%;
 
   @import 'reset.scss';
 
