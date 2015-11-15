@@ -37,7 +37,6 @@ function init() {
             const selectorApp = new Selector(node, global.document);
 
             selectorApp.on(EVENT_COMMENT, (r) => {
-                console.log(r);
                 client.action('mark', r.selection.result.serialize());
             });
 
