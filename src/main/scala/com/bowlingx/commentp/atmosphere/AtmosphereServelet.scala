@@ -60,7 +60,7 @@ trait AtmosphereServlet extends HttpServlet with Logging {
   private[this] val _routes: ConcurrentMap[HttpMethod, Seq[Action]] =
     new ConcurrentHashMap[HttpMethod, Seq[Action]].asScala
 
-  val CHANNEL_PARAMETER = 'channel
+  val CHANNEL_PARAMETER = 'splat
 
   val broadcasterFactory: BroadcasterFactory
 

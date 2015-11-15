@@ -55,7 +55,7 @@ final class WebSocketServlet @Inject()(broadcastFactory: BroadcasterFactory, env
 
   val broadcasterFactory: BroadcasterFactory = broadcastFactory
 
-  val channel = "/sock/sub/:channel".intern
+  val channel = "/sock/sub/*".intern
 
   private def extractAtmosphereResourceId(req:HttpServletRequest):String = {
     req.getAttribute(ApplicationConfig.SUSPENDED_ATMOSPHERE_RESOURCE_UUID).asInstanceOf[String]
@@ -81,7 +81,7 @@ final class WebSocketServlet @Inject()(broadcastFactory: BroadcasterFactory, env
       implicit val context = env.actorSystem.dispatcher
       implicit val timeout = 1 minute
       val uuid = extractAtmosphereResourceId(a.req)
-      a.routeParams.get('channel).flatMap(_.headOption) foreach { channelName =>
+      a.routeParams.get('splat).flatMap(_.headOption) foreach { channelName =>
         env.run(Channel(channelName, action, uuid))(timeout) foreach {
           case r@ActionResponse(id, message) =>
             Option(resourceFactory.find(uuid)).foreach(resource => {
