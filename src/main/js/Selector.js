@@ -90,9 +90,18 @@ export default class Selector extends EventEmitter {
         form.addEventListener('flexcss.form.submit', (e) => {
             e.preventDefault();
             this.emit(EVENT_COMMENT, {selection: this.currentRendering, data:formInstance.serialize()});
+            this.emit(EVENT_CLOSE, actionContainer, e);
             actionContainer.classList.remove(CLASS_OPEN);
             this.currentRendering = null;
             form.reset();
+        });
+
+        this.on(EVENT_CLOSE, (container) => {
+            Util.addEventOnce(Settings.getTransitionEvent(), container, () => {
+                if(!container.classList.contains(CLASS_OPEN)) {
+                    container.setAttribute('style', '');
+                }
+            });
         });
 
         const event = Settings.isTouchDevice() ? 'selectionchange' : 'mouseup';
@@ -157,6 +166,9 @@ export default class Selector extends EventEmitter {
                         }, 0);
                     }
                 } else {
+                    if(actionContainer.classList.contains(CLASS_OPEN)) {
+                        this.emit(EVENT_CLOSE, actionContainer);
+                    }
                     actionContainer.classList.remove(CLASS_OPEN);
                 }
             }
