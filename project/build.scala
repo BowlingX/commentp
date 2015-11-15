@@ -12,7 +12,8 @@ object CommentpBuild extends Build {
   // library versions
   lazy val scalaVersionNum       = "2.11.6"
   lazy val scalatraVersion       = "2.4.0.RC3"
-  lazy val elastic4sVersion      = "1.6.0"
+  lazy val elastic4sVersion      = "1.7.4"
+  lazy val elasticsearchVersion  = "1.7.3"
   lazy val atmosphereVersion     = "2.4.0"
   lazy val jettyVersion          = "9.1.5.v20140505"
   lazy val servletApiVersion     = "3.1.0"
@@ -48,7 +49,7 @@ object CommentpBuild extends Build {
         "org.eclipse.jetty.websocket" % "websocket-server" % jettyVersion,
         "javax.servlet" % "javax.servlet-api" % servletApiVersion,
         "com.sksamuel.elastic4s" %% "elastic4s-core" % elastic4sVersion intransitive(),
-        "org.elasticsearch" % "elasticsearch" % "1.6.0",
+        "org.elasticsearch" % "elasticsearch" % elasticsearchVersion,
         // atmosphere
         "org.atmosphere" % "atmosphere-runtime" % atmosphereVersion,
         "org.atmosphere" % "atmosphere-guice" % atmosphereVersion,
