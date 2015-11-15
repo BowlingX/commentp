@@ -36,7 +36,7 @@ function init() {
         Client.connect(channel).then((client) => {
             const selectorApp = new Selector(node, global.document);
 
-            selectorApp.on('comment', (r) => {
+            selectorApp.on(EVENT_COMMENT, (r) => {
 
             });
 
