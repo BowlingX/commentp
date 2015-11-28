@@ -35,9 +35,4 @@ deployment:
       - cat /dev/null | sbt docker:publishLocal
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push bowlingx/commentp
-      - eval `ssh-agent`
-      - chmod +x ~/commentp/deploy/ssh-add.sh
-      - ~/commentp/deploy/ssh-add.sh ~/.ssh/id_$COREOS_CLOUD_IP.pub
-      - ~/fleetctl destroy ~/commentp/fleet/commentp.service
-      - ~/fleetctl submit ~/commentp/fleet/commentp.service
-      - ~/fleetctl start ~/commentp/fleet/commentp.service
+
