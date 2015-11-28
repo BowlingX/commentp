@@ -5,12 +5,6 @@ machine:
     - docker
 
 dependencies:
-  pre:
-    - wget https://github.com/coreos/fleet/releases/download/v0.10.2/fleet-v0.10.2-linux-amd64.tar.gz
-    - tar xvzf fleet-v0.10.2-linux-amd64.tar.gz
-    - cd fleet-v0.10.2-linux-amd64 && cp ./fleetctl ~/
-    - mkdir -p ~/.fleetctl
-    - ssh-keyscan -t rsa $COREOS_CLOUD_IP >> ~/.fleetctl/known_hosts
   override:
     - docker build -t="bowlingx/commentp-base" .
     - npm install
@@ -22,11 +16,11 @@ test:
     - npm test
     - NODE_ENV=production npm run dist
     - sbt coverageAggregate
-    #- sbt coveralls
+    - sbt coveralls
   post:
       - mkdir -p $CIRCLE_TEST_REPORTS/junit/
       - find . -type f -regex "./test_out/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-      #- cat ./reports/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+      - cat ./reports/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
 deployment:
   hub:
