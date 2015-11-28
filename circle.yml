@@ -20,7 +20,7 @@ test:
   post:
       - mkdir -p $CIRCLE_TEST_REPORTS/junit/
       - find . -type f -regex "./test_out/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-      - cat ./reports/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+      #- cat ./reports/report-lcov/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 
 deployment:
   hub:
@@ -32,4 +32,4 @@ deployment:
 
 notify:
   webhooks:
-  - url: $TUTUM_TRIGGER
+    - url: $TUTUM_TRIGGER
