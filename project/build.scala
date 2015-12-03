@@ -10,18 +10,19 @@ object CommentpBuild extends Build {
   val projectName = "commentp"
 
   // library versions
-  lazy val scalaVersionNum       = "2.11.6"
-  lazy val scalatraVersion       = "2.4.0.RC3"
-  lazy val elastic4sVersion      = "1.7.4"
-  lazy val elasticsearchVersion  = "1.7.3"
-  lazy val atmosphereVersion     = "2.4.1"
-  lazy val jettyVersion          = "9.1.5.v20140505"
-  lazy val servletApiVersion     = "3.1.0"
-  lazy val logbackVersion        = "1.1.2"
-  lazy val akkaVersion           = "2.3.9"
-  lazy val guiceVersion          = "4.0"
-  lazy val json4sVersion         = "3.2.11"
-  lazy val scalamockVersion      = "3.2"
+  lazy val scalaVersionNum        = "2.11.6"
+  lazy val scalatraVersion        = "2.4.0.RC3"
+  lazy val elastic4sVersion       = "1.7.4"
+  lazy val elasticsearchVersion   = "1.7.3"
+  lazy val atmosphereVersion      = "2.4.1"
+  lazy val atmosphereGuiceVersion = "2.4.0"
+  lazy val jettyVersion           = "9.1.5.v20140505"
+  lazy val servletApiVersion      = "3.1.0"
+  lazy val logbackVersion         = "1.1.2"
+  lazy val akkaVersion            = "2.3.9"
+  lazy val guiceVersion           = "4.0"
+  lazy val json4sVersion          = "3.2.11"
+  lazy val scalamockVersion       = "3.2"
 
   lazy val project = Project(
     "commentp",
@@ -52,7 +53,7 @@ object CommentpBuild extends Build {
         "org.elasticsearch" % "elasticsearch" % elasticsearchVersion,
         // atmosphere
         "org.atmosphere" % "atmosphere-runtime" % atmosphereVersion,
-        "org.atmosphere" % "atmosphere-guice" % atmosphereVersion,
+        "org.atmosphere" % "atmosphere-guice" % atmosphereGuiceVersion,
         // guice
         "com.google.inject" % "guice" % guiceVersion,
         "com.tzavellas" %% "sse-guice" % "0.7.2",
