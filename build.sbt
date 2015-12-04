@@ -1,5 +1,6 @@
 import NativePackagerHelper._
 
+enablePlugins(JettyPlugin)
 
 enablePlugins(JavaServerAppPackaging)
 

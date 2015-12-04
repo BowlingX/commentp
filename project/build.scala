@@ -16,7 +16,7 @@ object CommentpBuild extends Build {
   lazy val elasticsearchVersion   = "1.7.3"
   lazy val atmosphereVersion      = "2.4.1"
   lazy val atmosphereGuiceVersion = "2.4.0"
-  lazy val jettyVersion           = "9.1.5.v20140505"
+  lazy val jettyVersion           = "9.3.6.v20151106"
   lazy val servletApiVersion      = "3.1.0"
   lazy val logbackVersion         = "1.1.2"
   lazy val akkaVersion            = "2.3.9"
